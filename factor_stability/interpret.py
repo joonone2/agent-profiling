@@ -71,11 +71,10 @@ def interpret_matrix(
         })
 
         # 콘솔 출력 (정성 확인용)
-        flag_str = " ⚠️ NOISE" if noise else ""
+        flag_str = " (NOISE)" if noise else ""
         ev_str = f"{ev:.3f}" if ev is not None else "N/A"
-        print(f"  [{method}] 축{k_}{flag_str}: "
+        print(f"  [{method}] axis{k_}{flag_str}: "
               f"gini={gini(h):.3f}, expVar={ev_str}")
-
         for feat, val in top_feats:
             print(f"      {feat:30s} {val:+.4f}")
 

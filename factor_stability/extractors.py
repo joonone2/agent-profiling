@@ -215,12 +215,15 @@ def extract_shap(
     X_shap: np.ndarray,
     feature_log: pd.DataFrame,
     feature_names: list,
+    k: int = K,
     seed: int = BASE_SEED,
 ) -> ExtractResult:
     """
     XGBoost 평점 예측 모델 기반 SHAP global importance 산출.
     ★ X_shap은 NaN을 포함한 원본 스케일 배열. XGBoost가 결측을 트리 분기에서
       자체적으로 처리하므로 별도 대체(imputation)를 하지 않음.
+    ★ k: user_scores를 몇 개의 그룹(soft-assignment)으로 나눌지.
+      K sweep 시 NMF/FA와 동일한 k로 맞춰 비교 가능하게 함.
 
     한계: 예측 태스크에 종속, loading 행렬 아님, 축은 수동 묶기 필요.
     """
@@ -251,9 +254,9 @@ def extract_shap(
 
     n_feat = len(feature_names)
     sorted_idx = np.argsort(importances)[::-1]
-    chunk = max(1, n_feat // K)
-    user_scores = np.zeros((X_shap.shape[0], K))
-    for k_ in range(K):
+    chunk = max(1, n_feat // k)
+    user_scores = np.zeros((X_shap.shape[0], k))
+    for k_ in range(k):
         feat_idx = sorted_idx[k_ * chunk: (k_ + 1) * chunk]
         user_scores[:, k_] = np.nanmean(np.abs(shap_values[:, feat_idx]), axis=1)
 

@@ -1,31 +1,59 @@
 # =============================================================================
 # visualize_phase0.py
-# Phase 0 results: intuitive visualizations (run after run_phase0.py).
+# Phase 0 results: intuitive visualizations.
+# Works for BOTH a single K=3 run (run_phase0.py) AND any K from the
+# K sweep (run_k_sweep.py) — pass --k to choose which folder to read.
 #
 # ★ All labels are English-only (verified, no Korean text in any plot)
 #   to avoid font glyph errors in matplotlib's default font (DejaVu Sans).
 #
-# ★ Layout: FA and NMF are kept in SEPARATE figures (not mixed in one row),
-#   plus one combined "overview" figure for side-by-side comparison.
+# ★ Layout: FA / NMF / SHAP are kept in SEPARATE figures (never mixed in
+#   one row).
 #
-# Required input files (in results/, created by run_phase0.py):
-#   - user_axis_scores.csv   : per-user axis scores (NMF/FA/SHAP)
-#   - user_feature_table.csv : per-user feature table (popularity_bias etc.)
+# ★ K-awareness: every plotting function takes the actual number of axes
+#   (n_axes) instead of hardcoding range(3), and reads/writes to a
+#   K-specific folder so results from different K values never overwrite
+#   each other.
 #
-# Outputs (all in results/):
-#   - validity_scatter_FA.png            : FA axes vs external signal
-#   - validity_scatter_NMF.png           : NMF axes vs external signal
-#   - axis_correlation_FA.png            : FA axis-pair independence check
-#   - axis_correlation_NMF.png           : NMF axis-pair independence check
-#   - axis_correlation_clustered_FA.png  : FA axis pairs, colored by K-means cluster
-#   - axis_correlation_clustered_NMF.png : NMF axis pairs, colored by K-means cluster
-#   - axis_space_2d_FA.png               : users in FA 2D axis space
-#   - axis_space_2d_NMF.png              : users in NMF 2D axis space
-#   - comparison_overview.png            : FA vs NMF side-by-side, same scale
+# ★ Plots included, per K folder:
+#   1) axis_correlation_{method}           : axis-pair independence check
+#                                             (ALL pairs, not just 0-1)
+#   2) axis_correlation_clustered_{method} : same, colored by K-means cluster
+#                                             (cluster count == behavioral K)
+#   3) axis_space_{method}                 : ALL axis pairs (not just 0-1),
+#                                             colored by popularity_bias,
+#                                             each panel's title shows r AND
+#                                             whether that axis circularly
+#                                             depends on popularity_bias as
+#                                             an input feature (see
+#                                             check_popularity_bias_validity)
+#   Methods covered: FA, NMF, SHAP (SHAP axes are importance-based soft
+#   groupings, not true loadings — this is noted in the plot title).
 #
-# Run: python visualize_phase0.py
+#   Cross-K plot (saved once, into results/k_sweep/, not per-K folder):
+#   4) k_sweep_summary.png : stability and external-validity-significant-axis
+#                             count vs K, one line per method. Answers
+#                             "what happens as I increase K?"
+#
+# Usage:
+#   python visualize_phase0.py            # uses config.K (single run, e.g. K=3)
+#   python visualize_phase0.py --k 5       # reads results/k_sweep/K5/
+#   python visualize_phase0.py --all-k     # runs for every value in K_SWEEP_VALUES
+#                                           # AND generates the cross-K summary
+#
+# Required input files (created by run_phase0.py or run_k_sweep.py):
+#   - user_axis_scores.csv    : per-user axis scores (NMF/FA/SHAP)
+#   - user_feature_table.csv  : per-user feature table (popularity_bias etc.)
+#   - axis_interpretation.csv : (optional) used only for the circularity
+#                                check described above; plots still work
+#                                without it, just skip that diagnostic.
+#   - results/k_sweep/k_sweep_summary.csv : (optional) needed only for the
+#                                cross-K summary plot.
 # =============================================================================
 
+import argparse
+import ast
+import re
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -36,199 +64,271 @@ matplotlib.rcParams["axes.unicode_minus"] = False  # avoid minus-sign glyph issu
 from sklearn.cluster import KMeans
 
 from pathlib import Path
-from config import RESULTS_DIR, DATA_DIR
-from data_loader import load_users, load_ratings, load_movies, apply_kcore, split_feature_validation
-from validity import compute_popularity_preference_raw, compute_director_loyalty
+from config import (
+    RESULTS_DIR, DATA_DIR, K as DEFAULT_K, K_SWEEP_VALUES, K_SWEEP_DIR,
+    get_k_results_dir, FNAME_INTERPRET,
+)
+
+
+# -----------------------------------------------------------------------------
+# Path resolution
+# -----------------------------------------------------------------------------
+
+def resolve_io_dir(k: int) -> Path:
+    """
+    Always prefer the k_sweep folder (results/k_sweep/K{k}/), since that's
+    where run_k_sweep.py saves every K including K==DEFAULT_K.
+
+    Fallback: if results/k_sweep/K{k}/ doesn't have the data but results/
+    (the root, used by the older single-run run_phase0.py) does AND k
+    matches DEFAULT_K, use that instead.
+    """
+    sweep_dir = get_k_results_dir(k)
+    if (sweep_dir / "user_axis_scores.csv").exists():
+        return sweep_dir
+    if k == DEFAULT_K and (RESULTS_DIR / "user_axis_scores.csv").exists():
+        return RESULTS_DIR
+    return sweep_dir
 
 
 # -----------------------------------------------------------------------------
 # Data loading
 # -----------------------------------------------------------------------------
 
-def load_results():
-    scores = pd.read_csv(RESULTS_DIR / "user_axis_scores.csv")
-    feats  = pd.read_csv(RESULTS_DIR / "user_feature_table.csv")
+def load_results(io_dir: Path):
+    scores = pd.read_csv(io_dir / "user_axis_scores.csv")
+    feats  = pd.read_csv(io_dir / "user_feature_table.csv")
     return scores, feats
 
 
-def compute_validation_signals():
+def infer_n_axes(scores: pd.DataFrame, method: str) -> int:
     """
-    Recompute the same independent signals used in validity.py
-    (no Korean text; safe to print to console only).
+    Count how many axis columns this method actually has in the scores file
+    (e.g. 'NMF_axis0'..'NMF_axis4' for K=5), instead of assuming a fixed K.
     """
-    ratings = apply_kcore(load_ratings(DATA_DIR))
-    movies  = load_movies(DATA_DIR)
-    users   = load_users(DATA_DIR)
-    data    = split_feature_validation(ratings, movies, users)
-    validation_log = data["validation_log"]
-
-    pop_pref  = compute_popularity_preference_raw(validation_log)
-    dir_loyal = compute_director_loyalty(validation_log)
-    return pop_pref, dir_loyal
+    cols = [c for c in scores.columns if c.startswith(f"{method}_axis")]
+    return len(cols)
 
 
-# Axis labels in plain English — used consistently across all plots.
-# Update these short descriptions if axis_interpretation.csv changes.
-AXIS_LABELS = {
-    "FA_axis0":  "FA axis0 (Thriller/Drama/Crime)",
-    "FA_axis1":  "FA axis1 (Adventure/SciFi/Action)",
-    "FA_axis2":  "FA axis2 (Children/Animation/Musical)",
-    "NMF_axis0": "NMF axis0 (Animation/Children/Musical)",
-    "NMF_axis1": "NMF axis1 (rating_std/War/Drama)",
-    "NMF_axis2": "NMF axis2 (Horror/Mystery/Thriller)",
-}
+METHOD_COLOR = {"FA": "#4CAF50", "NMF": "#2196F3", "SHAP": "#FB8C00"}
 
-METHOD_COLOR = {"FA": "#4CAF50", "NMF": "#2196F3"}
-
-# K-means clustering settings (for the clustered version of axis-pair plots)
-N_CLUSTERS = 3            # same K as the behavioral factor count, by default
+N_CLUSTERS = 3   # only used if you explicitly pass n_clusters=N_CLUSTERS;
+                 # default behavior follows behavioral K instead (see below)
 CLUSTER_SEED = 42
-CLUSTER_PALETTE = ["#E53935", "#1E88E5", "#43A047", "#FB8C00", "#8E24AA"]  # up to 5 clusters
+CLUSTER_PALETTE = ["#E53935", "#1E88E5", "#43A047", "#FB8C00", "#8E24AA",
+                    "#00ACC1", "#FDD835", "#6D4C41", "#5E35B1", "#43A047"]
+
+
+def axis_label(method: str, k: int) -> str:
+    return f"{method} axis{k}"
+
+
+def _all_axis_pairs(n_axes: int):
+    return [(i, j) for i in range(n_axes) for j in range(i + 1, n_axes)]
 
 
 # -----------------------------------------------------------------------------
-# (1) External validity scatter — ONE METHOD PER FIGURE
+# popularity_bias appropriateness check
+#
+# popularity_bias is one of the ~19 INPUT features fed into NMF/FA (it is a
+# column in user_feature_table.csv that was used to build the axes). So if
+# an axis correlates with popularity_bias, that can mean two very different
+# things:
+#   (a) CIRCULAR  — the axis's loading already weights popularity_bias
+#                   heavily as a top input feature, so the axis is *partly
+#                   built from* popularity_bias. A high correlation here is
+#                   expected almost by construction and is weak evidence.
+#   (b) EMERGENT   — popularity_bias is NOT a top feature for that axis, yet
+#                   the axis score still correlates with it. This is a much
+#                   stronger, non-trivial signal: an axis built from other
+#                   features (genres, rating stats) ended up tracking
+#                   popularity preference anyway.
+# This function checks both, per axis, using axis_interpretation.csv if
+# available (falls back gracefully — circularity flag becomes "unknown" —
+# if that file is missing, e.g. user only has user_axis_scores.csv).
 # -----------------------------------------------------------------------------
 
-def plot_validity_scatter_single(scores: pd.DataFrame, pop_pref: pd.Series, method: str):
+def _parse_top_features(raw: str):
+    """axis_interpretation.csv stores top_features as a stringified list of
+    (feature_name, loading_value) tuples, e.g. "[('Action', 0.82), ...]".
+    Parse it back with ast.literal_eval (safe — no eval())."""
+    try:
+        return ast.literal_eval(raw)
+    except (ValueError, SyntaxError):
+        return []
+
+
+def check_popularity_bias_validity(scores: pd.DataFrame, feats: pd.DataFrame,
+                                    method: str, io_dir: Path,
+                                    circular_top_n: int = 5):
     """
-    For a single method (FA or NMF), scatter all 3 axes vs pop_pref_raw.
-    One figure per method — avoids mixing FA/NMF in the same row.
+    For every axis of `method`, compute:
+      - r: correlation between the axis score and the popularity_bias feature
+      - circular: True if popularity_bias is among that axis's top
+        `circular_top_n` loading features (per axis_interpretation.csv).
+        None if axis_interpretation.csv isn't available for this K/method.
+
+    Returns a dict {axis_idx: {"r": float, "circular": bool or None}} and
+    also prints a readable report.
     """
-    cols = [f"{method}_axis{k}" for k in range(3)]
-    color = METHOD_COLOR[method]
+    n_axes = infer_n_axes(scores, method)
+    merged = scores.merge(feats[["user_id", "popularity_bias"]], on="user_id")
 
-    fig, axes = plt.subplots(1, 3, figsize=(15, 4.5))
+    interp_path = io_dir / FNAME_INTERPRET
+    interp_df = None
+    if interp_path.exists():
+        try:
+            interp_df = pd.read_csv(interp_path)
+        except Exception as e:
+            print(f"[visualize] WARNING: could not read {interp_path}: {e}")
 
-    for ax, col in zip(axes, cols):
-        merged = scores[["user_id", col]].merge(
-            pop_pref.rename("pop_pref_raw"), left_on="user_id", right_index=True
-        )
-        x = merged[col].values
-        y = merged["pop_pref_raw"].values
+    report = {}
+    print(f"\n[visualize] popularity_bias appropriateness check — {method} (K={n_axes}):")
+    print(f"  (CIRCULAR = popularity_bias is a top-{circular_top_n} input feature for "
+          f"that axis -> correlation is expected, weak evidence.")
+    print(f"   EMERGENT = popularity_bias is NOT a top input feature, yet the axis "
+          f"still correlates with it -> stronger, non-trivial evidence.)")
 
-        ax.scatter(x, y, alpha=0.15, s=8, color=color)
+    for k_ in range(n_axes):
+        col = f"{method}_axis{k_}"
+        r = np.corrcoef(merged[col], merged["popularity_bias"])[0, 1]
 
-        z = np.polyfit(x, y, 1)
-        xs = np.linspace(x.min(), x.max(), 100)
-        ax.plot(xs, np.polyval(z, xs), color="red", linewidth=2)
+        circular = None
+        if interp_df is not None:
+            row = interp_df[(interp_df["method"] == method) &
+                             (interp_df["axis_idx"] == k_)]
+            if len(row) > 0:
+                top_feats = _parse_top_features(row.iloc[0]["top_features"])
+                top_names = [f for f, _ in top_feats[:circular_top_n]]
+                circular = "popularity_bias" in top_names
 
-        r = np.corrcoef(x, y)[0, 1]
-        ax.set_xlabel(AXIS_LABELS.get(col, col) + "\naxis score")
-        ax.set_ylabel("Popularity preference (raw)")
-        ax.set_title(f"r = {r:.3f}")
-        ax.grid(True, alpha=0.3)
+        if circular is True:
+            tag = "CIRCULAR (popularity_bias is a top input feature)"
+        elif circular is False:
+            tag = "EMERGENT (popularity_bias is NOT a top input feature)"
+        else:
+            tag = "UNKNOWN (axis_interpretation.csv not found for this K)"
 
-    fig.suptitle(f"External Validity: {method} Axes vs Independent Signal\n"
-                 "(Each dot = one user; red line = trend)", fontsize=13)
-    fig.tight_layout()
-    path = RESULTS_DIR / f"validity_scatter_{method}.png"
-    fig.savefig(path, dpi=150)
-    plt.close(fig)
-    print(f"[visualize] saved: {path}")
+        flag = ""
+        if abs(r) < 0.1:
+            flag = " — weak/no relationship; color gradient will look flat for this axis"
+        print(f"  axis{k_}: r={r:+.3f}  [{tag}]{flag}")
+
+        report[k_] = {"r": r, "circular": circular}
+
+    return report
 
 
 # -----------------------------------------------------------------------------
-# (2) Axis-pair independence check — ONE METHOD PER FIGURE
+# (1) Axis-pair independence check
 # -----------------------------------------------------------------------------
 
-def plot_axis_correlation_single(scores: pd.DataFrame, method: str):
+def plot_axis_correlation_single(scores: pd.DataFrame, method: str, out_dir: Path):
     """
-    For a single method, scatter all axis pairs (0-1, 0-2, 1-2) in one row.
+    For a single method, scatter ALL axis pairs (K-aware: e.g. K=5 -> 10 pairs).
     """
-    cols = [f"{method}_axis{k}" for k in range(3)]
-    color = METHOD_COLOR[method]
-    axis_pairs = [(0, 1), (0, 2), (1, 2)]
+    n_axes = infer_n_axes(scores, method)
+    cols = [f"{method}_axis{k}" for k in range(n_axes)]
+    color = METHOD_COLOR.get(method, "#757575")
+    axis_pairs = _all_axis_pairs(n_axes)
 
-    fig, axes = plt.subplots(1, 3, figsize=(15, 4.5))
+    n_cols = min(len(axis_pairs), 5)
+    n_rows = int(np.ceil(len(axis_pairs) / n_cols))
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=(4.5 * n_cols, 4.2 * n_rows))
+    axes = np.array(axes).reshape(-1)
 
-    for ax, (i, j) in zip(axes, axis_pairs):
+    overlap_summary = []
+    for idx, (i, j) in enumerate(axis_pairs):
+        ax = axes[idx]
         x = scores[cols[i]].values
         y = scores[cols[j]].values
 
         ax.scatter(x, y, alpha=0.12, s=6, color=color)
-
         r = np.corrcoef(x, y)[0, 1]
         title_color = "red" if abs(r) > 0.5 else "black"
 
         ax.set_xlabel(f"{method} axis{i}")
         ax.set_ylabel(f"{method} axis{j}")
-        ax.set_title(f"r = {r:.3f}" + (" (possible overlap)" if abs(r) > 0.5 else ""),
+        ax.set_title(f"r = {r:.3f}" + (" (overlap)" if abs(r) > 0.5 else ""),
                     color=title_color, fontsize=10)
         ax.grid(True, alpha=0.3)
+        overlap_summary.append((i, j, r))
 
-    fig.suptitle(f"{method}: Axis Independence Check\n"
-                 "(Round cloud = independent / Diagonal cloud = overlapping)",
+    for idx in range(len(axis_pairs), len(axes)):
+        axes[idx].axis("off")
+
+    note = ""
+    if method == "SHAP":
+        note = "\n(SHAP axes are importance-based soft groupings, not true loadings)"
+    fig.suptitle(f"{method}: Axis Independence Check (K={n_axes})\n"
+                 "(Round cloud = independent / Diagonal cloud = overlapping)" + note,
                  fontsize=13)
     fig.tight_layout()
-    path = RESULTS_DIR / f"axis_correlation_{method}.png"
+    path = out_dir / f"axis_correlation_{method}.png"
     fig.savefig(path, dpi=150)
     plt.close(fig)
     print(f"[visualize] saved: {path}")
 
-    print(f"[visualize] {method} axis correlation summary:")
-    for i, j in axis_pairs:
-        r = np.corrcoef(scores[cols[i]], scores[cols[j]])[0, 1]
+    print(f"[visualize] {method} axis correlation summary (K={n_axes}):")
+    for i, j, r in overlap_summary:
         flag = " (possible overlap)" if abs(r) > 0.5 else ""
         print(f"  {method} axis{i} vs axis{j}: r={r:.3f}{flag}")
 
 
-def plot_axis_correlation_clustered(scores: pd.DataFrame, method: str,
-                                     n_clusters: int = N_CLUSTERS):
+def plot_axis_correlation_clustered(scores: pd.DataFrame, method: str, out_dir: Path,
+                                     n_clusters: int = None):
     """
-    Same layout as plot_axis_correlation_single (axis0-1, 0-2, 1-2 in one row),
-    but points are colored by K-means cluster instead of a single flat color.
+    Same layout as plot_axis_correlation_single, but points are colored by
+    K-means cluster (fit once on ALL axes together, so a user has the same
+    color in every panel).
 
-    ★ K-means is fit ONCE on all 3 axis scores together (not per-pair), so a
-      given user gets the SAME cluster color across all three panels.
-      Fitting separately per pair would let the same user appear as different
-      colors in different panels, which would be misleading.
-
-    This does NOT replace the axis scores themselves — it's an additional
-    diagnostic view: "if we force a hard grouping on top of the continuous
-    axis scores, do natural clusters emerge, and do they align with what the
-    continuous scores already show (e.g. the popularity-preference gradient)?"
+    ★ n_clusters=None (default): cluster K matches behavioral K (n_axes).
     """
-    cols = [f"{method}_axis{k}" for k in range(3)]
+    n_axes = infer_n_axes(scores, method)
+    if n_clusters is None:
+        n_clusters = n_axes
+    cols = [f"{method}_axis{k}" for k in range(n_axes)]
     X = scores[cols].values
 
     km = KMeans(n_clusters=n_clusters, random_state=CLUSTER_SEED, n_init=10)
     cluster_labels = km.fit_predict(X)
 
-    axis_pairs = [(0, 1), (0, 2), (1, 2)]
-    fig, axes = plt.subplots(1, 3, figsize=(15, 4.5))
+    axis_pairs = _all_axis_pairs(n_axes)
+    n_cols = min(len(axis_pairs), 5)
+    n_rows = int(np.ceil(len(axis_pairs) / n_cols))
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=(4.5 * n_cols, 4.2 * n_rows))
+    axes = np.array(axes).reshape(-1)
 
-    for ax, (i, j) in zip(axes, axis_pairs):
-        x = X[:, i]
-        y = X[:, j]
-
+    for idx, (i, j) in enumerate(axis_pairs):
+        ax = axes[idx]
+        x, y = X[:, i], X[:, j]
         for c in range(n_clusters):
             mask = cluster_labels == c
             ax.scatter(x[mask], y[mask], alpha=0.25, s=8,
                       color=CLUSTER_PALETTE[c % len(CLUSTER_PALETTE)],
-                      label=f"cluster {c}" if (i, j) == axis_pairs[0] else None)
-
+                      label=f"cluster {c}" if idx == 0 else None)
         r = np.corrcoef(x, y)[0, 1]
         ax.set_xlabel(f"{method} axis{i}")
         ax.set_ylabel(f"{method} axis{j}")
         ax.set_title(f"r = {r:.3f}", fontsize=10)
         ax.grid(True, alpha=0.3)
 
+    for idx in range(len(axis_pairs), len(axes)):
+        axes[idx].axis("off")
+
     axes[0].legend(loc="best", fontsize=8, markerscale=2)
 
-    fig.suptitle(f"{method}: Axis Pairs Colored by K-means Cluster (K={n_clusters})\n"
-                 "(Same user = same color across all 3 panels; "
-                 "checks whether a hard grouping matches the continuous axis structure)",
-                 fontsize=12)
+    fig.suptitle(f"{method}: Axis Pairs Colored by K-means Cluster "
+                 f"(behavioral K={n_axes}, cluster K={n_clusters})\n"
+                 "(Same user = same color across all panels)", fontsize=12)
     fig.tight_layout()
-    path = RESULTS_DIR / f"axis_correlation_clustered_{method}.png"
+    path = out_dir / f"axis_correlation_clustered_{method}.png"
     fig.savefig(path, dpi=150)
     plt.close(fig)
     print(f"[visualize] saved: {path}")
 
-    # Cluster size summary (sanity check: no degenerate tiny/huge clusters)
     sizes = pd.Series(cluster_labels).value_counts().sort_index()
-    print(f"[visualize] {method} cluster sizes (K={n_clusters}):")
+    print(f"[visualize] {method} cluster sizes (cluster K={n_clusters}):")
     for c, n in sizes.items():
         print(f"  cluster {c}: {n} users ({n/len(scores):.1%})")
 
@@ -236,144 +336,185 @@ def plot_axis_correlation_clustered(scores: pd.DataFrame, method: str,
 
 
 # -----------------------------------------------------------------------------
-# (3) Users in 2D axis space — ONE METHOD PER FIGURE
+# (2) Users in 2D axis space — NOW ALL PAIRS, with circularity-aware titles
 # -----------------------------------------------------------------------------
 
-def plot_axis_space_2d_single(scores: pd.DataFrame, feats: pd.DataFrame, method: str):
+def plot_axis_space_all_pairs(scores: pd.DataFrame, feats: pd.DataFrame,
+                               method: str, out_dir: Path,
+                               validity_report: dict):
     """
-    Single method: plot users on its strongest axis pair (axis with
-    highest |external validity| vs the next one), colored by popularity_bias.
+    For a single method, plot ALL axis pairs (not just axis0 vs axis1),
+    colored by popularity_bias. Each panel's title shows the correlation of
+    BOTH axes in that panel with popularity_bias, plus a circularity tag
+    (C=circular, E=emergent, ?=unknown) from check_popularity_bias_validity.
+
+    A flat/no-gradient panel is expected and OK if neither axis correlates
+    with popularity_bias — that's informative too (this axis pair encodes
+    something other than popularity preference).
     """
+    n_axes = infer_n_axes(scores, method)
+    if n_axes < 2:
+        print(f"[visualize] skip {method} axis space: only {n_axes} axis available")
+        return
+
     merged = scores.merge(feats[["user_id", "popularity_bias"]], on="user_id")
+    axis_pairs = _all_axis_pairs(n_axes)
 
-    # Use axis0 vs axis1 by default (consistent across methods for comparability)
-    xcol, ycol = f"{method}_axis0", f"{method}_axis1"
-    color_map = "coolwarm"
+    n_cols = min(len(axis_pairs), 5)
+    n_rows = int(np.ceil(len(axis_pairs) / n_cols))
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=(4.8 * n_cols, 4.3 * n_rows))
+    axes = np.array(axes).reshape(-1)
 
-    fig, ax = plt.subplots(figsize=(7, 6))
-    sc = ax.scatter(
-        merged[xcol], merged[ycol],
-        c=merged["popularity_bias"], cmap=color_map,
-        alpha=0.4, s=10, vmin=-0.5, vmax=0.5,
-    )
-    ax.set_xlabel(AXIS_LABELS.get(xcol, xcol))
-    ax.set_ylabel(AXIS_LABELS.get(ycol, ycol))
-    ax.set_title(f"{method}: Users in 2D Axis Space\n"
-                "(Color = preference for popular items)", fontsize=12)
-    ax.grid(True, alpha=0.3)
-    fig.colorbar(sc, ax=ax, label="popularity_bias")
+    def tag(k_):
+        c = validity_report.get(k_, {}).get("circular")
+        return "C" if c is True else ("E" if c is False else "?")
 
-    fig.tight_layout()
-    path = RESULTS_DIR / f"axis_space_2d_{method}.png"
-    fig.savefig(path, dpi=150)
-    plt.close(fig)
-    print(f"[visualize] saved: {path}")
-
-
-# -----------------------------------------------------------------------------
-# (4) FA vs NMF combined overview — side-by-side comparison
-# -----------------------------------------------------------------------------
-
-def plot_comparison_overview(scores: pd.DataFrame, feats: pd.DataFrame, pop_pref: pd.Series):
-    """
-    One figure, 2 rows (FA top, NMF bottom), 3 columns:
-      col1: axis0 vs axis1 (independence check, same as plot_axis_correlation)
-      col2: strongest axis vs pop_pref_raw (external validity)
-      col3: users in 2D axis space colored by popularity_bias
-
-    This is the "side-by-side" figure for directly comparing FA and NMF.
-    """
-    merged_feat = scores.merge(feats[["user_id", "popularity_bias"]], on="user_id")
-    merged_pop  = scores.merge(pop_pref.rename("pop_pref_raw"),
-                                left_on="user_id", right_index=True)
-
-    # Strongest validity axis per method (based on |r| with pop_pref_raw)
-    best_axis = {}
-    for method in ["FA", "NMF"]:
-        rs = {k: abs(np.corrcoef(merged_pop[f"{method}_axis{k}"],
-                                  merged_pop["pop_pref_raw"])[0, 1])
-              for k in range(3)}
-        best_axis[method] = max(rs, key=rs.get)
-
-    fig, axes = plt.subplots(2, 3, figsize=(16, 10))
-
-    for row, method in enumerate(["FA", "NMF"]):
-        color = METHOD_COLOR[method]
-
-        # --- col1: axis0 vs axis1 independence ---
-        ax = axes[row, 0]
-        x = scores[f"{method}_axis0"].values
-        y = scores[f"{method}_axis1"].values
-        ax.scatter(x, y, alpha=0.12, s=6, color=color)
-        r = np.corrcoef(x, y)[0, 1]
-        flag = " (overlap)" if abs(r) > 0.5 else ""
-        ax.set_title(f"{method}: axis0 vs axis1, r={r:.3f}{flag}",
-                    color="red" if abs(r) > 0.5 else "black", fontsize=10)
-        ax.set_xlabel(f"{method} axis0")
-        ax.set_ylabel(f"{method} axis1")
-        ax.grid(True, alpha=0.3)
-
-        # --- col2: strongest axis vs external validity ---
-        ax = axes[row, 1]
-        k = best_axis[method]
-        col = f"{method}_axis{k}"
-        x = merged_pop[col].values
-        y = merged_pop["pop_pref_raw"].values
-        ax.scatter(x, y, alpha=0.15, s=8, color=color)
-        z = np.polyfit(x, y, 1)
-        xs = np.linspace(x.min(), x.max(), 100)
-        ax.plot(xs, np.polyval(z, xs), color="red", linewidth=2)
-        r = np.corrcoef(x, y)[0, 1]
-        ax.set_title(f"{method}: strongest axis (axis{k}) vs popularity, r={r:.3f}",
-                    fontsize=10)
-        ax.set_xlabel(AXIS_LABELS.get(col, col))
-        ax.set_ylabel("Popularity preference (raw)")
-        ax.grid(True, alpha=0.3)
-
-        # --- col3: 2D axis space colored by popularity_bias ---
-        ax = axes[row, 2]
+    for idx, (i, j) in enumerate(axis_pairs):
+        ax = axes[idx]
         sc = ax.scatter(
-            merged_feat[f"{method}_axis0"], merged_feat[f"{method}_axis1"],
-            c=merged_feat["popularity_bias"], cmap="coolwarm",
-            alpha=0.4, s=10, vmin=-0.5, vmax=0.5,
+            merged[f"{method}_axis{i}"], merged[f"{method}_axis{j}"],
+            c=merged["popularity_bias"], cmap="coolwarm",
+            alpha=0.35, s=8, vmin=-0.5, vmax=0.5,
         )
-        ax.set_title(f"{method}: users in 2D axis space", fontsize=10)
-        ax.set_xlabel(f"{method} axis0")
-        ax.set_ylabel(f"{method} axis1")
+        ri = validity_report.get(i, {}).get("r", float("nan"))
+        rj = validity_report.get(j, {}).get("r", float("nan"))
+        ax.set_xlabel(f"{method} axis{i} (r={ri:+.2f}, {tag(i)})")
+        ax.set_ylabel(f"{method} axis{j} (r={rj:+.2f}, {tag(j)})")
         ax.grid(True, alpha=0.3)
-        fig.colorbar(sc, ax=ax, label="popularity_bias")
+        fig.colorbar(sc, ax=ax, label="popularity_bias", fraction=0.046, pad=0.04)
 
-    fig.suptitle("FA vs NMF: Side-by-Side Comparison\n"
-                 "(Top row = FA, Bottom row = NMF)", fontsize=14)
+    for idx in range(len(axis_pairs), len(axes)):
+        axes[idx].axis("off")
+
+    note = ""
+    if method == "SHAP":
+        note = "\n(SHAP axes are importance-based soft groupings, not true loadings)"
+    fig.suptitle(
+        f"{method}: Users in Axis Space, All Pairs (K={n_axes})\n"
+        "(Color = popularity_bias; r/tag in axis labels: "
+        "C=circular [popularity_bias is a top input feature for that axis], "
+        "E=emergent [it is not, yet still correlates], ?=unknown)" + note,
+        fontsize=11,
+    )
     fig.tight_layout()
-    path = RESULTS_DIR / "comparison_overview.png"
+    path = out_dir / f"axis_space_{method}.png"
     fig.savefig(path, dpi=150)
     plt.close(fig)
     print(f"[visualize] saved: {path}")
 
 
 # -----------------------------------------------------------------------------
-# Label / font sanity check — run before generating real plots
+# (3) Cross-K summary — how do things change as K varies?
+# -----------------------------------------------------------------------------
+
+def plot_k_sweep_summary():
+    """
+    Reads results/k_sweep/k_sweep_summary.csv (written by run_k_sweep.py)
+    and plots, per method (NMF/FA/SHAP), how stability and the count of
+    significant external-validity axes change as K increases.
+
+    Saved once into results/k_sweep/ (not into a per-K folder, since this
+    plot spans all K values).
+    """
+    summary_path = K_SWEEP_DIR / "k_sweep_summary.csv"
+    if not summary_path.exists():
+        print(f"[visualize] SKIP k_sweep_summary plot: {summary_path} not found. "
+              f"Run run_k_sweep.py first.")
+        return
+
+    df = pd.read_csv(summary_path)
+    methods = df["method"].unique().tolist()
+
+    fig, axes = plt.subplots(1, 2, figsize=(13, 5))
+
+    ax = axes[0]
+    for m in methods:
+        sub = df[df["method"] == m].sort_values("k")
+        color = METHOD_COLOR.get(m, "#757575")
+        ax.errorbar(sub["k"], sub["stability_mean"], yerr=sub["stability_std"],
+                    marker="o", label=m, color=color, capsize=3)
+    ax.axhline(0.85, color="red", linestyle="--", linewidth=1, label="GO threshold (0.85)")
+    ax.set_xlabel("K (number of behavioral axes)")
+    ax.set_ylabel("Stability (Tucker congruence / Spearman)")
+    ax.set_title("Stability vs K")
+    ax.set_xticks(sorted(df["k"].unique()))
+    ax.grid(True, alpha=0.3)
+    ax.legend()
+
+    ax = axes[1]
+    for m in methods:
+        sub = df[df["method"] == m].sort_values("k")
+        color = METHOD_COLOR.get(m, "#757575")
+        ax.plot(sub["k"], sub["valid_significant"], marker="o", label=m, color=color)
+    ax.set_xlabel("K (number of behavioral axes)")
+    ax.set_ylabel("# axes with significant external validity")
+    ax.set_title("External Validity Coverage vs K")
+    ax.set_xticks(sorted(df["k"].unique()))
+    ax.grid(True, alpha=0.3)
+    ax.legend()
+
+    fig.suptitle("How Results Change as K Increases", fontsize=14)
+    fig.tight_layout()
+    path = K_SWEEP_DIR / "k_sweep_summary.png"
+    fig.savefig(path, dpi=150)
+    plt.close(fig)
+    print(f"[visualize] saved: {path}")
+
+
+# -----------------------------------------------------------------------------
+# Label / font sanity check
 # -----------------------------------------------------------------------------
 
 def check_no_korean_labels():
-    """
-    Scans AXIS_LABELS and all hardcoded plot strings for non-ASCII characters
-    that would render as missing-glyph boxes in matplotlib's default font.
-    Raises a clear error instead of silently producing broken text in PNGs.
-    """
-    import re
-    suspects = []
-    for key, label in AXIS_LABELS.items():
-        if re.search(r"[^\x00-\x7F]", label):
-            suspects.append((key, label))
-    if suspects:
-        msg = "\n".join(f"  {k}: {v}" for k, v in suspects)
-        raise ValueError(
-            "Non-ASCII characters found in plot labels — these will render "
-            f"as broken glyphs:\n{msg}\nFix AXIS_LABELS before plotting."
-        )
-    print("[visualize] label check passed: no non-ASCII characters in axis labels.")
+    samples = [axis_label("FA", 0), axis_label("NMF", 9), axis_label("SHAP", 0),
+               "FA: Axis Independence Check (K=5)",
+               "Users in Axis Space, All Pairs"]
+    bad = [s for s in samples if re.search(r"[^\x00-\x7F]", s)]
+    if bad:
+        raise ValueError(f"Non-ASCII characters found in sample labels: {bad}")
+    print("[visualize] label check passed: sample labels are pure ASCII.")
+
+
+# -----------------------------------------------------------------------------
+# Per-K runner
+# -----------------------------------------------------------------------------
+
+def run_for_k(k: int):
+    io_dir = resolve_io_dir(k)
+    print(f"\n{'='*60}")
+    print(f"VISUALIZE — K = {k}  (reading/writing: {io_dir})")
+    print(f"{'='*60}")
+
+    if not (io_dir / "user_axis_scores.csv").exists():
+        print(f"[visualize] SKIP K={k}: {io_dir}/user_axis_scores.csv not found. "
+              f"Run run_phase0.py (for K={DEFAULT_K}) or run_k_sweep.py first.")
+        return
+
+    scores, feats = load_results(io_dir)
+
+    saved_files = []
+    for method in ["FA", "NMF", "SHAP"]:
+        n_axes = infer_n_axes(scores, method)
+        if n_axes == 0:
+            print(f"\n[visualize][K={k}] === {method} === SKIP: no axis columns found")
+            continue
+
+        print(f"\n[visualize][K={k}] === {method} ===")
+        plot_axis_correlation_single(scores, method, io_dir)
+        plot_axis_correlation_clustered(scores, method, io_dir)
+
+        validity_report = check_popularity_bias_validity(scores, feats, method, io_dir)
+        plot_axis_space_all_pairs(scores, feats, method, io_dir, validity_report)
+
+        saved_files += [
+            f"axis_correlation_{method}.png",
+            f"axis_correlation_clustered_{method}.png",
+            f"axis_space_{method}.png",
+        ]
+
+    print(f"\n[visualize][K={k}] done. Files in {io_dir}/:")
+    for f in saved_files:
+        print(f"  - {f}")
 
 
 # -----------------------------------------------------------------------------
@@ -381,34 +522,29 @@ def check_no_korean_labels():
 # -----------------------------------------------------------------------------
 
 def main():
+    parser = argparse.ArgumentParser(description="Phase 0 visualization (K-aware)")
+    parser.add_argument("--k", type=int, default=None,
+                        help=f"Which K to visualize. Default: config.K ({DEFAULT_K}).")
+    parser.add_argument("--all-k", action="store_true",
+                        help=f"Visualize every K in K_SWEEP_VALUES ({K_SWEEP_VALUES}) "
+                             f"plus the default K ({DEFAULT_K}), and also generate "
+                             f"the cross-K summary plot.")
+    args = parser.parse_args()
+
     print("[visualize] checking labels for font-glyph safety...")
     check_no_korean_labels()
 
-    print("[visualize] loading results...")
-    scores, feats = load_results()
-
-    print("[visualize] recomputing external validation signals...")
-    pop_pref, dir_loyal = compute_validation_signals()
-
-    for method in ["FA", "NMF"]:
-        print(f"\n[visualize] === {method} ===")
-        plot_validity_scatter_single(scores, pop_pref, method)
-        plot_axis_correlation_single(scores, method)
-        plot_axis_correlation_clustered(scores, method)
-        plot_axis_space_2d_single(scores, feats, method)
-
-    print("\n[visualize] === comparison overview ===")
-    plot_comparison_overview(scores, feats, pop_pref)
-
-    print(f"\n[visualize] done. Files in {RESULTS_DIR}/:")
-    for f in [
-        "validity_scatter_FA.png", "validity_scatter_NMF.png",
-        "axis_correlation_FA.png", "axis_correlation_NMF.png",
-        "axis_correlation_clustered_FA.png", "axis_correlation_clustered_NMF.png",
-        "axis_space_2d_FA.png", "axis_space_2d_NMF.png",
-        "comparison_overview.png",
-    ]:
-        print(f"  - {f}")
+    if args.all_k:
+        all_ks = sorted(set([DEFAULT_K] + list(K_SWEEP_VALUES)))
+        for k in all_ks:
+            run_for_k(k)
+        print(f"\n{'='*60}")
+        print("CROSS-K SUMMARY")
+        print(f"{'='*60}")
+        plot_k_sweep_summary()
+    else:
+        k = args.k if args.k is not None else DEFAULT_K
+        run_for_k(k)
 
 
 if __name__ == "__main__":
