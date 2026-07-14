@@ -62,6 +62,7 @@ matplotlib.use("Agg")
 matplotlib.rcParams["axes.unicode_minus"] = False  # avoid minus-sign glyph issues
 
 from sklearn.cluster import KMeans
+from sklearn.preprocessing import StandardScaler
 
 from pathlib import Path
 from config import (
@@ -117,6 +118,11 @@ N_CLUSTERS = 3   # only used if you explicitly pass n_clusters=N_CLUSTERS;
 CLUSTER_SEED = 42
 CLUSTER_PALETTE = ["#E53935", "#1E88E5", "#43A047", "#FB8C00", "#8E24AA",
                     "#00ACC1", "#FDD835", "#6D4C41", "#5E35B1", "#43A047"]
+
+# Above this behavioral K, the K-means-colored plot is skipped: with many
+# axes, forcing that many hard clusters onto a continuous mixture becomes
+# hard to read and interpret, so it stops being informative.
+CLUSTER_MAX_K = 5
 
 
 def axis_label(method: str, k: int) -> str:
@@ -336,6 +342,124 @@ def plot_axis_correlation_clustered(scores: pd.DataFrame, method: str, out_dir: 
 
 
 # -----------------------------------------------------------------------------
+# (1.5) Cluster in RAW feature space (before NMF/FA), then color axis space
+#       with those labels — an independent check requested separately from
+#       plot_axis_correlation_clustered (which clusters AFTER compression,
+#       inside the axis space itself).
+#
+# Why this is a stronger check than clustering the axis space directly:
+#   Clustering the compressed axis space and then confirming it looks
+#   clustered is somewhat circular (NMF/FA already optimized for a
+#   K-dimensional summary). Clustering the RAW, uncompressed features
+#   first — with zero knowledge of NMF/FA — and then checking whether
+#   that independent grouping still separates cleanly in axis space is a
+#   more independent test of whether the compression preserved real
+#   structure in the original data.
+#
+# Missing-value handling: raw genre averages contain NaN for genres a user
+# never rated. We use listwise deletion here (drop any user with a single
+# NaN in any of the 19 raw features) rather than mean imputation.
+# Verified on real K=3 data: this drops the sample from 6040 -> 3108 users
+# (~48.5% removed). The remaining users are NOT a random subsample — they
+# skew toward people who happened to watch many different genres — so
+# this raw-space clustering should be read as a check on that subpopulation,
+# not the full user base. Mean imputation was considered and rejected: it
+# would inject artificial homogeneity into exactly the columns (rare
+# genres) most affected by missingness, the same problem this project
+# has avoided since the very first feature-table design.
+# -----------------------------------------------------------------------------
+
+def cluster_raw_feature_space(feats: pd.DataFrame, n_clusters: int,
+                               seed: int = CLUSTER_SEED):
+    """
+    K-means on the ORIGINAL (pre-NMF/FA) feature table.
+    Uses listwise deletion (drop any user with a missing value in any raw
+    feature) rather than imputation — see caveat above. Returns a
+    DataFrame with columns [user_id, raw_cluster] covering only the
+    surviving (complete-case) users.
+    """
+    feature_cols = [c for c in feats.columns if c != "user_id"]
+    n_total = len(feats)
+
+    complete = feats.dropna(subset=feature_cols)
+    n_kept = len(complete)
+    print(f"[visualize] raw-feature-space clustering: listwise deletion kept "
+          f"{n_kept}/{n_total} users ({n_kept/n_total:.1%}) with no missing "
+          f"values across all {len(feature_cols)} raw features.")
+
+    X_scaled = StandardScaler().fit_transform(complete[feature_cols].values)
+
+    km = KMeans(n_clusters=n_clusters, random_state=seed, n_init=10)
+    raw_cluster = km.fit_predict(X_scaled)
+
+    out = pd.DataFrame({"user_id": complete["user_id"].values, "raw_cluster": raw_cluster})
+    sizes = out["raw_cluster"].value_counts().sort_index()
+    for c, n in sizes.items():
+        print(f"  raw_cluster {c}: {n} users ({n/len(out):.1%} of complete-case subsample)")
+    return out
+
+
+def plot_axis_space_raw_clustered(scores: pd.DataFrame, feats: pd.DataFrame,
+                                   method: str, out_dir: Path,
+                                   raw_cluster_df: pd.DataFrame):
+    """
+    Colors the axis-space scatter (all axis pairs) using cluster labels
+    computed from the RAW, pre-compression feature table (see
+    cluster_raw_feature_space). Same panel layout as
+    plot_axis_correlation_clustered, but the coloring answers a different
+    question: "does a grouping found in the ORIGINAL data still separate
+    cleanly after compression into behavioral axes?" — a check of whether
+    NMF/FA preserved real structure, rather than whether the axes
+    themselves cluster into groups.
+    """
+    n_axes = infer_n_axes(scores, method)
+    n_clusters = raw_cluster_df["raw_cluster"].nunique()
+    cols = [f"{method}_axis{k}" for k in range(n_axes)]
+
+    merged = scores.merge(raw_cluster_df, on="user_id")  # inner join: complete-case users only
+    n_shown = len(merged)
+    n_total = len(scores)
+    X = merged[cols].values
+    cluster_labels = merged["raw_cluster"].values
+
+    axis_pairs = _all_axis_pairs(n_axes)
+    n_cols = min(len(axis_pairs), 5)
+    n_rows = int(np.ceil(len(axis_pairs) / n_cols))
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=(4.5 * n_cols, 4.2 * n_rows))
+    axes = np.array(axes).reshape(-1)
+
+    for idx, (i, j) in enumerate(axis_pairs):
+        ax = axes[idx]
+        x, y = X[:, i], X[:, j]
+        for c in range(n_clusters):
+            mask = cluster_labels == c
+            ax.scatter(x[mask], y[mask], alpha=0.25, s=8,
+                      color=CLUSTER_PALETTE[c % len(CLUSTER_PALETTE)],
+                      label=f"raw_cluster {c}" if idx == 0 else None)
+        r = np.corrcoef(x, y)[0, 1]
+        ax.set_xlabel(f"{method} axis{i}")
+        ax.set_ylabel(f"{method} axis{j}")
+        ax.set_title(f"r = {r:.3f}", fontsize=10)
+        ax.grid(True, alpha=0.3)
+
+    for idx in range(len(axis_pairs), len(axes)):
+        axes[idx].axis("off")
+
+    axes[0].legend(loc="best", fontsize=8, markerscale=2)
+
+    fig.suptitle(
+        f"{method}: Axis Space Colored by RAW-Feature-Space Cluster "
+        f"(K={n_axes}, raw_cluster K={n_clusters})\n"
+        f"(Clusters found BEFORE compression, in the original 19 features, "
+        f"listwise deletion: n={n_shown}/{n_total} users shown)", fontsize=12)
+    fig.tight_layout()
+    path = out_dir / f"axis_space_rawclustered_{method}.png"
+    fig.savefig(path, dpi=150)
+    plt.close(fig)
+    print(f"[visualize] saved: {path}")
+
+
+# -----------------------------------------------------------------------------
 # (2) Users in 2D axis space — NOW ALL PAIRS, with circularity-aware titles
 # -----------------------------------------------------------------------------
 
@@ -492,6 +616,19 @@ def run_for_k(k: int):
 
     scores, feats = load_results(io_dir)
 
+    # Raw-feature-space clustering is method-independent (same 19 raw
+    # features regardless of FA/NMF/SHAP), but cluster count must match
+    # behavioral K, so compute once per K value using any method's n_axes
+    # (they're all equal to k for NMF/FA; SHAP's axis count also matches k
+    # by construction). Only meaningful for K <= CLUSTER_MAX_K (see note).
+    raw_cluster_df = None
+    if k <= CLUSTER_MAX_K:
+        print(f"\n[visualize][K={k}] === raw feature space clustering ===")
+        raw_cluster_df = cluster_raw_feature_space(feats, n_clusters=k)
+    else:
+        print(f"\n[visualize][K={k}] skip raw-feature-space clustering: "
+              f"K={k} > {CLUSTER_MAX_K}")
+
     saved_files = []
     for method in ["FA", "NMF", "SHAP"]:
         n_axes = infer_n_axes(scores, method)
@@ -501,14 +638,28 @@ def run_for_k(k: int):
 
         print(f"\n[visualize][K={k}] === {method} ===")
         plot_axis_correlation_single(scores, method, io_dir)
-        plot_axis_correlation_clustered(scores, method, io_dir)
+
+        # K-means-colored plot only for small K (see CLUSTER_MAX_K note).
+        if n_axes <= CLUSTER_MAX_K:
+            plot_axis_correlation_clustered(scores, method, io_dir)
+            cluster_file = [f"axis_correlation_clustered_{method}.png"]
+        else:
+            print(f"[visualize] skip clustered plot for {method}: "
+                  f"behavioral K={n_axes} > {CLUSTER_MAX_K} (too many hard clusters "
+                  f"to be informative)")
+            cluster_file = []
+
+        raw_cluster_file = []
+        if raw_cluster_df is not None:
+            plot_axis_space_raw_clustered(scores, feats, method, io_dir, raw_cluster_df)
+            raw_cluster_file = [f"axis_space_rawclustered_{method}.png"]
 
         validity_report = check_popularity_bias_validity(scores, feats, method, io_dir)
         plot_axis_space_all_pairs(scores, feats, method, io_dir, validity_report)
 
         saved_files += [
             f"axis_correlation_{method}.png",
-            f"axis_correlation_clustered_{method}.png",
+        ] + cluster_file + raw_cluster_file + [
             f"axis_space_{method}.png",
         ]
 

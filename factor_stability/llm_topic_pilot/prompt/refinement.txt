@@ -1,0 +1,35 @@
+You will receive a list of topics that belong to the same level of a topic hierarchy. Your task is to merge topics that are paraphrases or near duplicates of one another. Return "None" if no modification is needed.
+
+Here are some examples:
+[Example 1]
+Topic List:
+[1] Sci-Fi Adventures: Appreciates films that explore futuristic concepts and imaginative worlds, often with a sense of wonder and exploration
+[1] Classic Sci-Fi Epics: Appreciates grand narratives within the science fiction genre that have stood the test of time, often featuring iconic characters and themes
+
+Your response:
+[1] Sci-Fi Adventures: Appreciates futuristic, imaginative science fiction films, from classic genre-defining epics to modern adventures ([1]Sci-Fi Adventures,[1]Classic Sci-Fi Epics)
+
+[Example 2]
+Topic List:
+[1] Whimsical Family-Friendly Adventures: Enjoys films that blend adventure and humor, often appealing to a younger audience or family settings
+[1] Classic Family-Friendly Adventures: Appreciates films that are suitable for all ages, often featuring whimsical storytelling and heartwarming themes
+
+Your response:
+[1] Family-Friendly Adventures: Enjoys lighthearted, adventurous films suitable for all ages, blending humor and heartwarming storytelling ([1]Whimsical Family-Friendly Adventures,[1]Classic Family-Friendly Adventures)
+
+[Rules]
+- Each line represents a topic, with a level indicator and a topic label.
+- Perform the following operations as many times as needed:
+    - Merge relevant topics into a single topic.
+    - Do nothing and return "None" if no modification is needed.
+- CRITICAL OUTPUT FORMAT (must match exactly, or the merge will silently fail to parse):
+  [Level] New Label: New Description ([OriginalLevel]OriginalLabel1,[OriginalLevel]OriginalLabel2)
+  - The trailing parenthetical MUST list every original topic being merged, each one prefixed with its own level number in brackets (e.g. "[1]Topic Name"), separated by commas, with NO space after the comma and NO space between the bracket and the topic name.
+  - Do not add any words, quotes, or punctuation other than what the format above shows.
+
+
+[Topic List]
+{Topics}
+
+Output the modification or "None" where appropriate. Do not output anything else.
+[Your response]

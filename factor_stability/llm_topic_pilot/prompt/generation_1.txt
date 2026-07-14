@@ -1,0 +1,47 @@
+You will receive a document describing one person's movie-watching history (movie titles, their original genre tags, and the ratings this person gave them) and a set of top-level topics from a topic hierarchy of VIEWER TASTE ARCHETYPES. Your task is to identify generalizable taste archetypes within the document that can act as top-level topics in the hierarchy. If any relevant archetypes are missing from the provided set, please add them. Otherwise, output the existing top-level topics as identified in the document.
+
+[Top-level topics]
+{Topics}
+
+[Examples]
+Example 1: Adding "[1] Dark Character-Driven Drama"
+Document:
+Taxi Driver (1976) (Drama, Thriller): 5/5
+Raging Bull (1980) (Drama): 5/5
+GoodFellas (1990) (Crime, Drama): 5/5
+American Beauty (1999) (Comedy, Drama): 4/5
+Fargo (1996) (Crime, Drama, Thriller): 4/5
+
+Your response:
+[1] Dark Character-Driven Drama: Gives top ratings to morally complex, psychologically intense films centered on a troubled protagonist, spanning several original genre tags (Drama, Crime, Thriller) rather than any single one.
+
+Example 2: Duplicate "[1] Dark Character-Driven Drama", returning the existing topic
+Document:
+Requiem for a Dream (2000) (Drama): 5/5
+No Country for Old Men (2007) (Crime, Drama, Thriller): 5/5
+
+Your response:
+[1] Dark Character-Driven Drama: Gives top ratings to morally complex, psychologically intense films centered on a troubled protagonist, spanning several original genre tags (Drama, Crime, Thriller) rather than any single one.
+
+[Instructions]
+Step 1: Determine taste archetypes reflected in the document.
+- The topic labels must be as GENERALIZABLE as possible. They must not be document-specific.
+- CRITICAL: Do NOT reuse an existing genre tag from the document (e.g. "Drama", "Comedy", "Action", "Sci-Fi") verbatim as a topic label. Genre tags are raw input, already known; your job is to SYNTHESIZE a higher-level taste pattern by looking at WHICH combinations of genres, eras, tones, or subjects this person rates highest, across MULTIPLE titles. A single genre word is not an acceptable topic label under any circumstance.
+- The topics must reflect a SINGLE taste archetype instead of a combination of unrelated archetypes.
+- The new topics must have a level number, a short general label, and a topic description.
+- The topics must be broad enough to accommodate future subtopics.
+Step 2: Perform ONE of the following operations:
+1. If there are already duplicates or relevant archetypes in the hierarchy, output those topics and stop here.
+2. If the document contains no identifiable archetype (e.g. ratings are too few or too inconsistent to see a pattern), return "None".
+3. Otherwise, add your archetype as a top-level topic. Stop here and output the added topic(s). DO NOT add any additional levels.
+
+
+[Document]
+{Document}
+
+Please ONLY return the relevant or modified topics at the top level in the hierarchy. Your response must follow this format exactly, with no deviation:
+[Topic Level] Topic Label: Topic Description
+
+Do not add a separate "Supporting quote:" line or any other extra field. If you want to justify the topic with an example, include it inline within the Topic Description itself, in parentheses, citing at most one film title.
+
+Your response:

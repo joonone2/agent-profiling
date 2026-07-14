@@ -1,0 +1,30 @@
+You will receive a document describing one person's movie-watching history and a fixed list of taste topics. For EVERY topic in the list (not just the ones that seem most relevant), rate how strongly this person's viewing history matches that topic on a 0-5 scale, then justify the score with a quote from the document. DO NOT make up new topics or quotes. DO NOT skip any topic, even if the score is 0.
+
+[Topic Hierarchy]
+{tree}
+
+[Examples]
+Example: Scoring all topics for a document
+Document:
+Taxi Driver (1976) (Drama, Thriller): 5/5
+Raging Bull (1980) (Drama): 5/5
+Toy Story (1995) (Animation, Children's, Comedy): 2/5
+
+Assignment (assuming the topic hierarchy contains "Character-Driven Dramas" and "Family-Friendly Adventures"):
+[1] Character-Driven Dramas: 5/5 - Gives top ratings to psychologically intense, character-driven films ("Taxi Driver (1976) (Drama, Thriller): 5/5")
+[1] Family-Friendly Adventures: 1/5 - Rates a family-friendly animated film low relative to their other ratings ("Toy Story (1995) (Animation, Children's, Comedy): 2/5")
+
+[Instructions]
+1. Topic labels must be present in the provided topic hierarchy. You MUST NOT make up new topics.
+2. You MUST output a line for EVERY topic in the hierarchy, in the exact order given, even when the score is 0.
+3. The score must reflect how strongly the person's OVERALL viewing history (not just one movie) matches the topic, on a 0 (no match) to 5 (very strong match) scale.
+4. The quote must be taken from the document. You MUST NOT make up quotes. If the score is 0, you may cite the closest movie that still fell short, or write "(no supporting title)".
+
+[Document]
+{Document}
+
+Double check that you have exactly one line per topic in the hierarchy, with no topics skipped or invented!
+Your response should be in the following format:
+[Topic Level] Topic Label: Score/5 - Assignment reasoning (Supporting quote)
+
+Your response:
