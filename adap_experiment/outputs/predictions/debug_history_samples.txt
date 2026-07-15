@@ -1,0 +1,370 @@
+======================================================================
+[sample #1]
+user_weights: {'factor_0': 0.3349290905158991, 'factor_1': 0.3260013076219519, 'factor_2': 0.3390696018621491}
+history (first 3 shown as key): ('Breaking the Waves (1996) (4.0점)', 'Shine (1996) (4.0점)', 'Cinema Paradiso (1988) (5.0점)')
+----------------------------------------------------------------------
+FULL PROMPT SENT TO ORCHESTRATOR:
+아래는 한 유저(가중치: factor_0: 0.335, factor_1: 0.326, factor_2: 0.339)에 대해 여러 에이전트가 독립적으로 내린 판단입니다.
+
+  factor_0: 점수 2.0 (이유: 어린이와 가족 관객을 위한 요소가 부족하고, 전반적으로 어두운 주제를 다루어 창의성과 매력을 느끼기 어렵다.)
+  factor_1: 점수 4.5 (이유: 전쟁의 참혹함과 인간 내면의 갈등을 사실적으로 묘사하며, 강렬한 캐릭터와 긴장감 넘치는 전개가 인상적인 작품이다.)
+  factor_2: 점수 3.5 (이유: 전쟁의 참혹함을 사실적으로 묘사했지만, 긴장감과 스릴이 부족하여 액션 장르를 선호하는 관객에게는 다소 아쉬울 수 있다.)
+
+이 유저의 최근 시청 이력은 다음과 같습니다:
+  - Breaking the Waves (1996) (4.0점)
+  - Shine (1996) (4.0점)
+  - Cinema Paradiso (1988) (5.0점)
+  - On the Waterfront (1954) (3.0점)
+  - Silence of the Lambs, The (1991) (5.0점)
+  - Apocalypse Now (1979) (4.0점)
+  - Blue Velvet (1986) (4.0점)
+  - American Graffiti (1973) (3.0점)
+  - Five Easy Pieces (1970) (5.0점)
+  - Pulp Fiction (1994) (5.0점)
+  - Ran (1985) (4.0점)
+  - Graduate, The (1967) (5.0점)
+  - My Left Foot (1989) (4.0점)
+  - GoodFellas (1990) (4.0점)
+  - Shawshank Redemption, The (1994) (3.0점)
+  - Life Is Beautiful (La Vita è bella) (1997) (5.0점)
+  - Blue Angel, The (Blaue Engel, Der) (1930) (4.0점)
+  - Wizard of Oz, The (1939) (5.0점)
+  - Secrets & Lies (1996) (4.0점)
+  - Bicycle Thief, The (Ladri di biciclette) (1948) (5.0점)
+
+가중치와 시청 이력을 모두 참고하여 이 유저의 최종 예상 평점을 1.0~5.0 사이 숫자 하나로만 답하세요.
+======================================================================
+
+======================================================================
+[sample #2]
+user_weights: {'factor_0': 0.33274627012955266, 'factor_1': 0.32776027924564066, 'factor_2': 0.3394934506248066}
+history (first 3 shown as key): ('Lady and the Tramp (1955) (4.0점)', 'Lethal Weapon (1987) (3.0점)', 'Little Shop of Horrors, The (1960) (3.0점)')
+----------------------------------------------------------------------
+FULL PROMPT SENT TO ORCHESTRATOR:
+아래는 한 유저(가중치: factor_0: 0.333, factor_1: 0.328, factor_2: 0.339)에 대해 여러 에이전트가 독립적으로 내린 판단입니다.
+
+  factor_0: 점수 2.0 (이유: 어린이와 가족 관객을 위한 요소가 부족하고, 스토리와 캐릭터의 매력이 제한적이다.)
+  factor_1: 점수 3.5 (이유: 사회적 메시지를 담고 있는 유머와 정치 풍자가 흥미롭지만, 스토리의 복잡성과 긴장감이 부족해 다소 평범하게 느껴졌다.)
+  factor_2: 점수 2.0 (이유: 코미디 장르로서의 재미는 있지만, 긴장감과 스릴, 액션 요소가 부족하여 선호하는 장르와는 맞지 않는다.)
+
+이 유저의 최근 시청 이력은 다음과 같습니다:
+  - Lady and the Tramp (1955) (4.0점)
+  - Lethal Weapon (1987) (3.0점)
+  - Little Shop of Horrors, The (1960) (3.0점)
+  - Last Detail, The (1973) (4.0점)
+  - Willy Wonka and the Chocolate Factory (1971) (4.0점)
+  - Breakfast Club, The (1985) (3.0점)
+  - Bug's Life, A (1998) (4.0점)
+  - Waking Ned Devine (1998) (4.0점)
+  - Four Weddings and a Funeral (1994) (4.0점)
+  - Heathers (1989) (3.0점)
+  - Gods Must Be Crazy, The (1980) (4.0점)
+  - Nightmare Before Christmas, The (1993) (4.0점)
+  - Down by Law (1986) (5.0점)
+  - Clerks (1994) (3.0점)
+  - Around the World in 80 Days (1956) (3.0점)
+  - Dinner Game, The (Le Dîner de cons) (1998) (3.0점)
+  - Ed Wood (1994) (4.0점)
+  - Hudsucker Proxy, The (1994) (4.0점)
+  - Big Chill, The (1983) (4.0점)
+  - Galaxy Quest (1999) (4.0점)
+
+가중치와 시청 이력을 모두 참고하여 이 유저의 최종 예상 평점을 1.0~5.0 사이 숫자 하나로만 답하세요.
+======================================================================
+
+======================================================================
+[sample #3]
+user_weights: {'factor_0': 0.33932329619974777, 'factor_1': 0.3162912331996776, 'factor_2': 0.3443854706005747}
+history (first 3 shown as key): ('Brazil (1985) (3.0점)', 'Shawshank Redemption, The (1994) (5.0점)', 'Toy Story (1995) (4.0점)')
+----------------------------------------------------------------------
+FULL PROMPT SENT TO ORCHESTRATOR:
+아래는 한 유저(가중치: factor_0: 0.339, factor_1: 0.316, factor_2: 0.344)에 대해 여러 에이전트가 독립적으로 내린 판단입니다.
+
+  factor_0: 점수 2.0 (이유: 어린이와 가족 관객을 위한 요소가 부족하고, 스토리와 캐릭터의 매력이 제한적이다.)
+  factor_1: 점수 4.5 (이유: 복잡한 스토리와 매력적인 캐릭터 간의 유머러스한 상호작용이 긴장감 넘치는 미스터리를 더욱 흥미롭게 만들어준다.)
+  factor_2: 점수 2.5 (이유: 미스터리 요소는 흥미롭지만 긴장감과 스릴이 부족하여 액션과 공포 장르를 선호하는 관객에게는 매력이 떨어진다.)
+
+이 유저의 최근 시청 이력은 다음과 같습니다:
+  - Brazil (1985) (3.0점)
+  - Shawshank Redemption, The (1994) (5.0점)
+  - Toy Story (1995) (4.0점)
+  - Pulp Fiction (1994) (5.0점)
+  - Babe (1995) (4.0점)
+  - Raiders of the Lost Ark (1981) (5.0점)
+  - Monty Python's Life of Brian (1979) (4.0점)
+  - Harold and Maude (1971) (3.0점)
+  - Grand Day Out, A (1992) (5.0점)
+  - Great Escape, The (1963) (5.0점)
+  - Full Metal Jacket (1987) (3.0점)
+  - Gold Rush, The (1925) (4.0점)
+  - North by Northwest (1959) (3.0점)
+  - Psycho (1960) (5.0점)
+  - Silence of the Lambs, The (1991) (5.0점)
+  - Manchurian Candidate, The (1962) (3.0점)
+  - On the Waterfront (1954) (4.0점)
+  - L.A. Confidential (1997) (2.0점)
+  - Apocalypse Now (1979) (4.0점)
+  - Graduate, The (1967) (3.0점)
+
+가중치와 시청 이력을 모두 참고하여 이 유저의 최종 예상 평점을 1.0~5.0 사이 숫자 하나로만 답하세요.
+======================================================================
+
+======================================================================
+[sample #4]
+user_weights: {'factor_0': 0.3311836441388984, 'factor_1': 0.32990697572190825, 'factor_2': 0.3389093801391933}
+history (first 3 shown as key): ('Sling Blade (1996) (4.0점)', 'Buena Vista Social Club (1999) (5.0점)', 'Like Water for Chocolate (Como agua para chocolate) (1992) (4.0점)')
+----------------------------------------------------------------------
+FULL PROMPT SENT TO ORCHESTRATOR:
+아래는 한 유저(가중치: factor_0: 0.331, factor_1: 0.330, factor_2: 0.339)에 대해 여러 에이전트가 독립적으로 내린 판단입니다.
+
+  factor_0: 점수 2.0 (이유: 어린이와 가족 관객을 위한 요소가 부족하고, 스토리와 캐릭터의 매력이 제한적이어서 전반적으로 제 취향에 맞지 않습니다.)
+  factor_1: 점수 2.0 (이유: 코미디 장르로서의 재미는 있지만, 스토리의 복잡성과 캐릭터의 심리적 깊이가 부족하여 제 기대에 미치지 못했습니다.)
+  factor_2: 점수 2.0 (이유: 긴장감과 스릴, 독창적인 세계관, 강렬한 액션 시퀀스가 부족하여 제 취향에 맞지 않습니다.)
+
+이 유저의 최근 시청 이력은 다음과 같습니다:
+  - Sling Blade (1996) (4.0점)
+  - Buena Vista Social Club (1999) (5.0점)
+  - Like Water for Chocolate (Como agua para chocolate) (1992) (4.0점)
+  - Secrets & Lies (1996) (4.0점)
+  - Killing Fields, The (1984) (5.0점)
+  - Graduate, The (1967) (4.0점)
+  - Saving Private Ryan (1998) (4.0점)
+  - Fargo (1996) (5.0점)
+  - Diner (1982) (3.0점)
+  - Usual Suspects, The (1995) (5.0점)
+  - Silence of the Lambs, The (1991) (4.0점)
+  - L.A. Confidential (1997) (3.0점)
+  - Shakespeare in Love (1998) (4.0점)
+  - Amadeus (1984) (5.0점)
+  - Crying Game, The (1992) (3.0점)
+  - Magnolia (1999) (2.0점)
+  - Manchurian Candidate, The (1962) (3.0점)
+  - GoodFellas (1990) (5.0점)
+  - Annie Hall (1977) (3.0점)
+  - Shawshank Redemption, The (1994) (5.0점)
+
+가중치와 시청 이력을 모두 참고하여 이 유저의 최종 예상 평점을 1.0~5.0 사이 숫자 하나로만 답하세요.
+======================================================================
+
+======================================================================
+[sample #5]
+user_weights: {'factor_0': 0.3320119476634417, 'factor_1': 0.3309792292750828, 'factor_2': 0.3370088230614755}
+history (first 3 shown as key): ('Erin Brockovich (2000) (4.0점)', 'Last Days of Disco, The (1998) (3.0점)', 'Field of Dreams (1989) (5.0점)')
+----------------------------------------------------------------------
+FULL PROMPT SENT TO ORCHESTRATOR:
+아래는 한 유저(가중치: factor_0: 0.332, factor_1: 0.331, factor_2: 0.337)에 대해 여러 에이전트가 독립적으로 내린 판단입니다.
+
+  factor_0: 점수 2.0 (이유: 가족의 복잡한 감정을 다루고 있지만, 어린이와 가족 관객을 위한 요소가 부족하여 제 취향에 맞지 않습니다.)
+  factor_1: 점수 3.5 (이유: 감정적으로 깊이 있는 가족 드라마이지만, 스토리의 복잡성과 긴장감이 부족하여 예측 가능한 전개가 아쉬웠다.)
+  factor_2: 점수 2.0 (이유: 드라마 장르로서 긴장감과 스릴이 부족하며, 액션 요소가 전혀 없어 흥미를 끌기 어렵다.)
+
+이 유저의 최근 시청 이력은 다음과 같습니다:
+  - Erin Brockovich (2000) (4.0점)
+  - Last Days of Disco, The (1998) (3.0점)
+  - Field of Dreams (1989) (5.0점)
+  - Smoke (1995) (4.0점)
+  - Cutting Edge, The (1992) (3.0점)
+  - Of Mice and Men (1992) (3.0점)
+  - Indochine (1992) (5.0점)
+  - Restoration (1995) (4.0점)
+  - Mr. Holland's Opus (1995) (2.0점)
+  - Cider House Rules, The (1999) (5.0점)
+  - Marvin's Room (1996) (2.0점)
+  - Postino, Il (The Postman) (1994) (4.0점)
+  - Liberty Heights (1999) (3.0점)
+  - Shadowlands (1993) (3.0점)
+  - Awakenings (1990) (4.0점)
+  - Bronx Tale, A (1993) (5.0점)
+  - Truman Show, The (1998) (4.0점)
+  - Titanic (1953) (1.0점)
+  - Piano, The (1993) (3.0점)
+  - Jean de Florette (1986) (5.0점)
+
+가중치와 시청 이력을 모두 참고하여 이 유저의 최종 예상 평점을 1.0~5.0 사이 숫자 하나로만 답하세요.
+======================================================================
+
+======================================================================
+[sample #1]
+user_weights: {'factor_0': 0.3364162799958687, 'factor_1': 0.32490490288777124, 'factor_2': 0.3386788171163601}
+history (first 3 shown as key): ('Shakespeare in Love (1998) (4.0점)', 'Witness (1985) (4.0점)', 'Annie Hall (1977) (5.0점)')
+----------------------------------------------------------------------
+FULL PROMPT SENT TO ORCHESTRATOR:
+아래는 한 유저(가중치: factor_0: 0.336, factor_1: 0.325, factor_2: 0.339)에 대해 여러 에이전트가 독립적으로 내린 판단입니다.
+
+  factor_0: 점수 2.0 (이유: 어린이와 가족 관객을 위한 요소가 부족하고, 스토리의 창의성이나 캐릭터의 매력이 어린이 영화에 비해 낮습니다.)
+  factor_1: 점수 4.5 (이유: 시간의 압박 속에서 반복되는 선택과 그로 인한 결과를 통해 인생의 불확실성과 운명을 탐구하는 독창적인 서사 구조가 인상적이다.)
+  factor_2: 점수 4.0 (이유: 독창적인 시간 반복 구조와 긴장감 넘치는 액션 시퀀스가 매력적이지만, 공포나 공상과학 요소가 부족해 다소 아쉬운 점이 있다.)
+
+이 유저의 최근 시청 이력은 다음과 같습니다:
+  - Shakespeare in Love (1998) (4.0점)
+  - Witness (1985) (4.0점)
+  - Annie Hall (1977) (5.0점)
+  - Sleepy Hollow (1999) (4.0점)
+  - Mosquito Coast, The (1986) (3.0점)
+  - Batman Forever (1995) (4.0점)
+  - Mission: Impossible (1996) (3.0점)
+  - Quick and the Dead, The (1995) (4.0점)
+  - Mystery Men (1999) (3.0점)
+  - Men in Black (1997) (4.0점)
+  - True Lies (1994) (3.0점)
+  - Princess Mononoke, The (Mononoke Hime) (1997) (4.0점)
+  - Dances with Wolves (1990) (4.0점)
+  - Mrs. Doubtfire (1993) (3.0점)
+  - Waterworld (1995) (1.0점)
+  - Robin Hood: Prince of Thieves (1991) (3.0점)
+  - Phenomenon (1996) (3.0점)
+  - Little Women (1994) (4.0점)
+  - Kids (1995) (4.0점)
+  - Men With Guns (1997) (3.0점)
+
+가중치와 시청 이력을 모두 참고하여 이 유저의 최종 예상 평점을 1.0~5.0 사이 숫자 하나로만 답하세요.
+======================================================================
+
+======================================================================
+[sample #2]
+user_weights: {'factor_0': 0.3290598414068727, 'factor_1': 0.32731539744836485, 'factor_2': 0.34362476114476237}
+history (first 3 shown as key): ('Scent of a Woman (1992) (4.0점)', 'Pocahontas (1995) (4.0점)', 'Powder (1995) (4.0점)')
+----------------------------------------------------------------------
+FULL PROMPT SENT TO ORCHESTRATOR:
+아래는 한 유저(가중치: factor_0: 0.329, factor_1: 0.327, factor_2: 0.344)에 대해 여러 에이전트가 독립적으로 내린 판단입니다.
+
+  factor_0: 점수 4.0 (이유: 유쾌한 스토리와 매력적인 캐릭터들, 그리고 훌륭한 음악이 어우러져 가족 관객에게 즐거움을 주는 작품입니다.)
+  factor_1: 점수 2.5 (이유: 코미디와 범죄 요소가 결합된 작품이지만, 스토리의 복잡성과 캐릭터의 심리적 깊이가 부족하여 긴장감과 반전 요소가 미흡하다.)
+  factor_2: 점수 2.0 (이유: 긴장감과 스릴이 부족하고, 액션 요소가 전혀 없어 선호하는 장르와 맞지 않기 때문입니다.)
+
+이 유저의 최근 시청 이력은 다음과 같습니다:
+  - Scent of a Woman (1992) (4.0점)
+  - Pocahontas (1995) (4.0점)
+  - Powder (1995) (4.0점)
+  - Parent Trap, The (1998) (3.0점)
+  - Last of the Mohicans, The (1992) (4.0점)
+  - Star Trek: First Contact (1996) (4.0점)
+  - James and the Giant Peach (1996) (3.0점)
+  - Pretty Woman (1990) (4.0점)
+  - Bug's Life, A (1998) (3.0점)
+  - Antz (1998) (2.0점)
+  - Thin Red Line, The (1998) (4.0점)
+  - Stuart Little (1999) (2.0점)
+  - Groundhog Day (1993) (4.0점)
+  - Lion King, The (1994) (4.0점)
+  - Dumb & Dumber (1994) (4.0점)
+  - What About Bob? (1991) (5.0점)
+  - Mask of Zorro, The (1998) (4.0점)
+  - Tarzan (1999) (4.0점)
+  - Cider House Rules, The (1999) (5.0점)
+  - Forrest Gump (1994) (4.0점)
+
+가중치와 시청 이력을 모두 참고하여 이 유저의 최종 예상 평점을 1.0~5.0 사이 숫자 하나로만 답하세요.
+======================================================================
+
+======================================================================
+[sample #3]
+user_weights: {'factor_0': 0.3163109663178843, 'factor_1': 0.3267449130258652, 'factor_2': 0.35694412065625053}
+history (first 3 shown as key): ('54 (1998) (3.0점)', 'American Pie (1999) (2.0점)', 'Hollow Man (2000) (4.0점)')
+----------------------------------------------------------------------
+FULL PROMPT SENT TO ORCHESTRATOR:
+아래는 한 유저(가중치: factor_0: 0.316, factor_1: 0.327, factor_2: 0.357)에 대해 여러 에이전트가 독립적으로 내린 판단입니다.
+
+  factor_0: 점수 2.0 (이유: 어린이와 가족 관객을 위한 요소가 부족하고, 스토리와 캐릭터의 매력이 제한적이며, 음악과 시각적 요소도 기대에 미치지 못합니다.)
+  factor_1: 점수 2.0 (이유: 코미디 장르로서 유머는 있지만 스토리의 복잡성과 캐릭터의 심리적 깊이가 부족하여 긴장감과 반전 요소가 미흡하다.)
+  factor_2: 점수 2.0 (이유: 코미디 요소가 주를 이루지만 긴장감과 스릴, 독창적인 세계관, 강렬한 액션 시퀀스가 부족하여 제 취향에 맞지 않습니다.)
+
+이 유저의 최근 시청 이력은 다음과 같습니다:
+  - 54 (1998) (3.0점)
+  - American Pie (1999) (2.0점)
+  - Hollow Man (2000) (4.0점)
+  - Scary Movie (2000) (5.0점)
+  - Nutty Professor II: The Klumps (2000) (2.0점)
+  - Mission: Impossible (1996) (3.0점)
+  - Miracle on 34th Street (1994) (3.0점)
+  - Fantasia (1940) (1.0점)
+  - X-Men (2000) (3.0점)
+  - Exorcist, The (1973) (5.0점)
+  - Seven (Se7en) (1995) (2.0점)
+  - American Beauty (1999) (5.0점)
+  - Frequency (2000) (4.0점)
+  - Broken Hearts Club, The (2000) (4.0점)
+  - Coyote Ugly (2000) (3.0점)
+  - Hanging Up (2000) (2.0점)
+  - Next Best Thing, The (2000) (2.0점)
+  - Scream 3 (2000) (1.0점)
+  - Road Trip (2000) (4.0점)
+  - Eye of the Beholder (1999) (1.0점)
+
+가중치와 시청 이력을 모두 참고하여 이 유저의 최종 예상 평점을 1.0~5.0 사이 숫자 하나로만 답하세요.
+======================================================================
+
+======================================================================
+[sample #4]
+user_weights: {'factor_0': 0.335243784917158, 'factor_1': 0.3213335592363783, 'factor_2': 0.3434226558464637}
+history (first 3 shown as key): ('Toy Story (1995) (4.0점)', 'Last Emperor, The (1987) (5.0점)', 'Seven Years in Tibet (1997) (5.0점)')
+----------------------------------------------------------------------
+FULL PROMPT SENT TO ORCHESTRATOR:
+아래는 한 유저(가중치: factor_0: 0.335, factor_1: 0.321, factor_2: 0.343)에 대해 여러 에이전트가 독립적으로 내린 판단입니다.
+
+  factor_0: 점수 2.0 (이유: 어린이와 가족 관객을 위한 요소가 부족하고, 스토리와 캐릭터의 매력이 제한적이며, 음악과 시각적 요소도 기대에 미치지 못합니다.)
+  factor_1: 점수 3.5 (이유: 사이버펑크적 요소와 사회적 비판이 잘 결합되어 있지만, 스토리의 복잡성과 캐릭터의 심리적 깊이는 다소 부족하다.)
+  factor_2: 점수 4.5 (이유: 독창적인 세계관과 강렬한 액션 시퀀스가 결합되어 긴장감 넘치는 스토리를 제공하며, 주인공의 내적 갈등이 깊이 있는 캐릭터를 만들어낸다.)
+
+이 유저의 최근 시청 이력은 다음과 같습니다:
+  - Toy Story (1995) (4.0점)
+  - Last Emperor, The (1987) (5.0점)
+  - Seven Years in Tibet (1997) (5.0점)
+  - Blues Brothers, The (1980) (5.0점)
+  - Blues Brothers 2000 (1998) (1.0점)
+  - Jerk, The (1979) (5.0점)
+  - Ghostbusters (1984) (5.0점)
+  - Ghostbusters II (1989) (3.0점)
+  - Mr. Mom (1983) (5.0점)
+  - Raising Arizona (1987) (5.0점)
+  - Star Wars: Episode V - The Empire Strikes Back (1980) (4.0점)
+  - Star Wars: Episode IV - A New Hope (1977) (5.0점)
+  - Rushmore (1998) (4.0점)
+  - Election (1999) (4.0점)
+  - Fargo (1996) (5.0점)
+  - Eyes Wide Shut (1999) (2.0점)
+  - He Got Game (1998) (4.0점)
+  - Godfather: Part II, The (1974) (4.0점)
+  - Men in Black (1997) (3.0점)
+  - E.T. the Extra-Terrestrial (1982) (5.0점)
+
+가중치와 시청 이력을 모두 참고하여 이 유저의 최종 예상 평점을 1.0~5.0 사이 숫자 하나로만 답하세요.
+======================================================================
+
+======================================================================
+[sample #5]
+user_weights: {'factor_0': 0.3281730992272799, 'factor_1': 0.32609853222011, 'factor_2': 0.34572836855261013}
+history (first 3 shown as key): ('Stand by Me (1986) (4.0점)', 'Who Framed Roger Rabbit? (1988) (2.0점)', 'Nutty Professor, The (1996) (4.0점)')
+----------------------------------------------------------------------
+FULL PROMPT SENT TO ORCHESTRATOR:
+아래는 한 유저(가중치: factor_0: 0.328, factor_1: 0.326, factor_2: 0.346)에 대해 여러 에이전트가 독립적으로 내린 판단입니다.
+
+  factor_0: 점수 4.5 (이유: 창의적인 스토리와 매력적인 캐릭터들이 유머와 로맨스를 잘 결합하여 가족 관객에게 즐거움을 주는 작품입니다.)
+  factor_1: 점수 3.5 (이유: 비록 유머와 로맨스가 잘 결합된 작품이지만, 스토리의 복잡성과 심리적 깊이가 부족하여 제 취향에는 다소 아쉬움이 남습니다.)
+  factor_2: 점수 3.5 (이유: 비록 액션과 모험 요소가 있지만, 공포와 공상과학 장르의 긴장감과 스릴이 부족하여 제 취향에는 다소 아쉬운 작품입니다.)
+
+이 유저의 최근 시청 이력은 다음과 같습니다:
+  - Stand by Me (1986) (4.0점)
+  - Who Framed Roger Rabbit? (1988) (2.0점)
+  - Nutty Professor, The (1996) (4.0점)
+  - Dragonheart (1996) (4.0점)
+  - Jumanji (1995) (3.0점)
+  - Star Wars: Episode I - The Phantom Menace (1999) (4.0점)
+  - Midsummer Night's Dream, A (1999) (4.0점)
+  - Santa Clause, The (1994) (4.0점)
+  - Honey, I Shrunk the Kids (1989) (3.0점)
+  - Dune (1984) (4.0점)
+  - Teenage Mutant Ninja Turtles (1990) (4.0점)
+  - Mask, The (1994) (4.0점)
+  - Goonies, The (1985) (5.0점)
+  - Dark Crystal, The (1982) (4.0점)
+  - Splash (1984) (4.0점)
+  - Beetlejuice (1988) (4.0점)
+  - Big (1988) (4.0점)
+  - Willy Wonka and the Chocolate Factory (1971) (4.0점)
+  - E.T. the Extra-Terrestrial (1982) (4.0점)
+  - Willow (1988) (4.0점)
+
+가중치와 시청 이력을 모두 참고하여 이 유저의 최종 예상 평점을 1.0~5.0 사이 숫자 하나로만 답하세요.
+======================================================================
+
