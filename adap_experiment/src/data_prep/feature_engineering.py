@@ -4,7 +4,6 @@ User×Feature(19-dim), Item×Feature(19-dim) 행렬 생성
 import os
 import logging
 
-import numpy as np
 import pandas as pd
 
 from config import GENRES, FEATURE_NAMES, OUTPUT_DIR
@@ -23,6 +22,15 @@ def compute_item_popularity(ratings_df: pd.DataFrame) -> pd.Series:
     return popularity
 
 
+def _build_genre_multihot(movies_df: pd.DataFrame) -> pd.DataFrame:
+    """movieId -> GENRES 순서의 0/1 multi-hot 행렬 (movies_df에 없는 장르 조합도 GENRES 컬럼으로 강제)."""
+    exploded = movies_df[["movieId", "genres"]].explode("genres")
+    dummies = pd.crosstab(exploded["movieId"], exploded["genres"])
+    dummies = dummies.reindex(columns=GENRES, fill_value=0)
+    dummies = dummies.reindex(index=movies_df["movieId"], fill_value=0)
+    return dummies.astype(float)
+
+
 def build_user_feature_matrix(
     train_df: pd.DataFrame,
     movies_df: pd.DataFrame,
@@ -34,42 +42,37 @@ def build_user_feature_matrix(
     장르별 피처 (18개): 해당 유저가 train 데이터에서 그 장르의 영화들에 준 평점의 평균.
         한 번도 평가 안 한 장르는 전체 유저 평균(global mean rating)으로 대체.
     popularity_bias (1개): 유저가 평가한 영화들의 인기도 백분위 평균값.
+
+    NOTE: 원래는 유저×장르×rating을 파이썬 삼중 루프(.iterrows())로 순회했으나,
+    동일한 계산을 merge+groupby로 벡터화하여 대체함 (결과는 동일, 속도만 개선).
     """
     global_mean_rating = train_df["rating"].mean()
-
-    # 영화별 장르 매핑 (movieId → set of genres)
-    movie_genres: dict[int, set[str]] = {}
-    for _, row in movies_df.iterrows():
-        movie_genres[int(row["movieId"])] = set(row["genres"])
-
     user_ids = train_df["userId"].unique()
-    records: list[dict] = []
 
-    for uid in user_ids:
-        user_rows = train_df[train_df["userId"] == uid]
-        feature: dict[str, float] = {}
+    genre_dummies = _build_genre_multihot(movies_df)
 
-        # 장르별 평균 평점
-        for genre in GENRES:
-            genre_ratings = []
-            for _, r in user_rows.iterrows():
-                mid = int(r["movieId"])
-                if mid in movie_genres and genre in movie_genres[mid]:
-                    genre_ratings.append(r["rating"])
-            if genre_ratings:
-                feature[genre] = float(np.mean(genre_ratings))
-            else:
-                feature[genre] = global_mean_rating  # imputation
+    # rating 행마다 해당 영화의 장르 multi-hot을 붙임 (movies_df에 없는 movieId는 전부 0으로 처리 → 원본의 "mid in movie_genres" 체크와 동일)
+    ratings_with_genres = train_df[["userId", "movieId", "rating"]].merge(
+        genre_dummies, left_on="movieId", right_index=True, how="left",
+    )
+    ratings_with_genres[GENRES] = ratings_with_genres[GENRES].fillna(0.0)
 
-        # popularity_bias: 유저가 평가한 영화들의 인기도 백분위 평균
-        user_movie_ids = user_rows["movieId"].values
-        pop_values = item_popularity.reindex(user_movie_ids).dropna().values
-        feature["popularity_bias"] = float(np.mean(pop_values)) if len(pop_values) > 0 else 0.5
+    # 유저별 장르 평균 평점 = (해당 장르 영화에 준 평점의 합) / (해당 장르 영화 평가 개수)
+    genre_rating_sum = ratings_with_genres[GENRES].multiply(
+        ratings_with_genres["rating"], axis=0
+    ).groupby(ratings_with_genres["userId"]).sum()
+    genre_count = ratings_with_genres[GENRES].groupby(ratings_with_genres["userId"]).sum()
+    genre_mean = (genre_rating_sum / genre_count).reindex(user_ids)
+    genre_mean = genre_mean.fillna(global_mean_rating)  # 한 번도 평가 안 한 장르는 전체 평균으로 대체(imputation)
 
-        feature["userId"] = uid
-        records.append(feature)
+    # popularity_bias: 유저가 평가한 영화들의 인기도 백분위 평균
+    pop_per_row = train_df["movieId"].map(item_popularity)
+    popularity_bias = pop_per_row.groupby(train_df["userId"]).mean().reindex(user_ids)
+    popularity_bias = popularity_bias.fillna(0.5)
 
-    result = pd.DataFrame(records).set_index("userId")
+    result = genre_mean.copy()
+    result["popularity_bias"] = popularity_bias
+    result.index.name = "userId"
     # FEATURE_NAMES 순서를 강제
     result = result[FEATURE_NAMES]
 
@@ -81,44 +84,23 @@ def build_user_feature_matrix(
     return result
 
 
-def build_item_feature_vector(
-    movie_id: int,
-    movies_df: pd.DataFrame,
-    item_popularity: pd.Series,
-) -> np.ndarray:
-    """
-    19-dim: 장르 multi-hot (해당 장르면 1, 아니면 0, 정규화 없음) + popularity_bias (해당 영화의 인기도 백분위)
-    """
-    row = movies_df[movies_df["movieId"] == movie_id]
-    if row.empty:
-        return np.zeros(len(FEATURE_NAMES))
-
-    genres_list = row.iloc[0]["genres"]
-    vec = []
-    for genre in GENRES:
-        vec.append(1.0 if genre in genres_list else 0.0)
-
-    # popularity_bias
-    pop = item_popularity.get(movie_id, 0.5)
-    vec.append(float(pop))
-    return np.array(vec)
-
-
 def build_item_feature_matrix(
     movies_df: pd.DataFrame,
     item_popularity: pd.Series,
 ) -> pd.DataFrame:
     """
-    전체 영화에 대해 build_item_feature_vector를 적용한 행렬.
+    19-dim: 장르 multi-hot (해당 장르면 1, 아니면 0) + popularity_bias (해당 영화의 인기도 백분위).
     index: movieId, columns: FEATURE_NAMES
-    """
-    records = []
-    for _, row in movies_df.iterrows():
-        mid = int(row["movieId"])
-        vec = build_item_feature_vector(mid, movies_df, item_popularity)
-        records.append({"movieId": mid, **dict(zip(FEATURE_NAMES, vec))})
 
-    result = pd.DataFrame(records).set_index("movieId")
+    NOTE: 원래는 영화마다 movies_df를 다시 필터링(movies_df[movies_df["movieId"]==mid])하는
+    O(영화수^2) 루프였으나, 동일한 계산을 벡터화하여 대체함 (결과는 동일, 속도만 개선).
+    """
+    genre_dummies = _build_genre_multihot(movies_df)  # index=movieId, columns=GENRES (0.0/1.0)
+
+    result = genre_dummies.copy()
+    result.index.name = "movieId"
+    result["popularity_bias"] = item_popularity.reindex(result.index).fillna(0.5)
+    result = result[FEATURE_NAMES]
 
     # 저장
     factors_dir = os.path.join(OUTPUT_DIR, "factors")

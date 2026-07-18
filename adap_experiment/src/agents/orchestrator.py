@@ -6,12 +6,14 @@ import logging
 import os
 import threading
 
-from src.llm_client import call_llm, parse_score, parse_batch_scores
+from src.llm_client import call_llm, parse_score, parse_batch_scores, parse_ranking
 from prompts.templates import (
     AGENT_JUDGE_SINGLE_PROMPT,
     AGENT_JUDGE_BATCH_PROMPT,
     ORCHESTRATOR_RATING_PROMPT,
     ORCHESTRATOR_RATING_WITH_HISTORY_PROMPT,
+    ORCHESTRATOR_RANKING_PROMPT,
+    ORCHESTRATOR_RANKING_WITH_HISTORY_PROMPT,
 )
 from config import OUTPUT_DIR
 
@@ -202,28 +204,50 @@ def orchestrate_rating(
 def orchestrate_ranking(
     agent_outputs_per_item: dict,
     user_weights: dict,
+    candidate_items: list[dict],
     history: list[str] | None,
 ) -> list[int]:
     """
-    랭킹 트랙: 규칙 기반 가중합 (비용 문제로 LLM 호출 대신 규칙기반 사용).
+    랭킹 트랙: LLM 기반 listwise 랭킹.
     agent_outputs_per_item: {item_id: {factor_id: score}}
-    반환: item_id를 종합점수 내림차순으로 정렬한 리스트 (길이 20)
+    candidate_items: [{"item_id": int, "title": str, "genres": list[str]}, ...]
+    history: include_history=True일 때만 최근 시청 이력 제목 리스트, 아니면 None.
 
-    NOTE: 레이팅 트랙의 orchestrate_rating은 LLM 호출 버전을 기본으로 하지만,
-    랭킹 트랙은 20개 아이템 각각에 LLM을 호출하면 비용이 과다하므로
-    규칙기반 가중합(final_score = Σ w_k * agent_score_k)을 기본값으로 한다.
+    반환: item_id를 LLM이 매긴 선호 순서대로 정렬한 리스트 (길이 20)
+
+    NOTE: 이전에는 후보마다 개별 호출(pointwise)로 LLM에게 예상 평점을 물어 정렬했으나,
+    같은 history가 매 호출마다 반복 주입되면서 후보별 변별력이 사라지는 문제가 있어
+    (모든 후보 점수가 비슷하게 수렴 → 동점 발생) 후보 전체를 한 프롬프트에 넣고
+    한 번에 순위를 매기는 listwise 방식으로 전환했다. 호출 수도 후보 수(20)에서 1로 줄어든다.
     """
-    # TODO: history가 주어지면 가중합 계산 전에 이력 기반 보정(간단한 가산점 등)을 추가할 수 있음.
-    # 현재는 미구현 상태로 history 인자를 무시하고 규칙기반 가중합 결과를 그대로 반환한다.
-
-    item_scores: dict[int, float] = {}
-    for item_id, factor_scores in agent_outputs_per_item.items():
-        final_score = sum(
-            user_weights.get(fid, 0) * s
-            for fid, s in factor_scores.items()
+    weights_text = ", ".join(f"{fid}: {w:.3f}" for fid, w in user_weights.items())
+    items_text = "\n".join(
+        f"  {c['title']} (장르: {', '.join(c['genres'])}) — " + ", ".join(
+            f"{fid}: {agent_outputs_per_item[c['item_id']].get(fid, 3.0):.1f}"
+            for fid in user_weights
         )
-        item_scores[item_id] = final_score
+        for c in candidate_items
+    )
+    candidate_titles = {c["item_id"]: c["title"] for c in candidate_items}
 
-    # 내림차순 정렬
-    ranked = sorted(item_scores.keys(), key=lambda x: item_scores[x], reverse=True)
-    return ranked
+    if history is not None:
+        history_text = "\n".join(f"  - {title}" for title in history)
+        prompt = ORCHESTRATOR_RANKING_WITH_HISTORY_PROMPT.format(
+            weights_text=weights_text,
+            n=len(candidate_items),
+            items_text=items_text,
+            history_text=history_text,
+        )
+    else:
+        prompt = ORCHESTRATOR_RANKING_PROMPT.format(
+            weights_text=weights_text,
+            n=len(candidate_items),
+            items_text=items_text,
+        )
+
+    response = call_llm(
+        system_prompt="You are a recommendation orchestrator that combines multiple agent judgments to rank candidates.",
+        user_prompt=prompt,
+    )
+
+    return parse_ranking(response, candidate_titles)

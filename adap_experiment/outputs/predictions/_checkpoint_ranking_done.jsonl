@@ -1,0 +1,882 @@
+{"user_id": 2154, "method": "UserKNN", "recall": 1, "ndcg": 0.5}
+{"user_id": 2154, "method": "MF", "recall": 1, "ndcg": 0.5}
+{"user_id": 2154, "method": "Baseline", "recall": 1, "ndcg": 0.3562071871080222}
+{"user_id": 2154, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 2154, "method": "Ours (NMF)", "recall": 1, "ndcg": 1.0}
+{"user_id": 2154, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 1.0}
+{"user_id": 2154, "method": "Ours (FA)", "recall": 1, "ndcg": 1.0}
+{"user_id": 2154, "method": "Ours+History (FA)", "recall": 1, "ndcg": 1.0}
+{"user_id": 711, "method": "UserKNN", "recall": 1, "ndcg": 0.3333333333333333}
+{"user_id": 711, "method": "MF", "recall": 1, "ndcg": 0.5}
+{"user_id": 711, "method": "Baseline", "recall": 1, "ndcg": 0.31546487678572877}
+{"user_id": 711, "method": "ChatGPT-Direct", "recall": 0, "ndcg": 0.0}
+{"user_id": 711, "method": "Ours (NMF)", "recall": 1, "ndcg": 1.0}
+{"user_id": 711, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 1.0}
+{"user_id": 711, "method": "Ours (FA)", "recall": 1, "ndcg": 0.5}
+{"user_id": 711, "method": "Ours+History (FA)", "recall": 1, "ndcg": 1.0}
+{"user_id": 5530, "method": "UserKNN", "recall": 1, "ndcg": 0.2890648263178879}
+{"user_id": 5530, "method": "MF", "recall": 0, "ndcg": 0.0}
+{"user_id": 5530, "method": "Baseline", "recall": 0, "ndcg": 0.0}
+{"user_id": 5530, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 0.38685280723454163}
+{"user_id": 5530, "method": "Ours (NMF)", "recall": 0, "ndcg": 0.0}
+{"user_id": 5530, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 0.31546487678572877}
+{"user_id": 5530, "method": "Ours (FA)", "recall": 1, "ndcg": 0.38685280723454163}
+{"user_id": 5530, "method": "Ours+History (FA)", "recall": 1, "ndcg": 0.3010299956639812}
+{"user_id": 3128, "method": "UserKNN", "recall": 1, "ndcg": 0.43067655807339306}
+{"user_id": 3128, "method": "MF", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 3128, "method": "Baseline", "recall": 1, "ndcg": 0.3010299956639812}
+{"user_id": 3128, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 1.0}
+{"user_id": 3128, "method": "Ours (NMF)", "recall": 1, "ndcg": 0.31546487678572877}
+{"user_id": 3128, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 0.31546487678572877}
+{"user_id": 3128, "method": "Ours (FA)", "recall": 1, "ndcg": 0.38685280723454163}
+{"user_id": 3128, "method": "Ours+History (FA)", "recall": 1, "ndcg": 0.43067655807339306}
+{"user_id": 1273, "method": "UserKNN", "recall": 1, "ndcg": 0.3333333333333333}
+{"user_id": 1273, "method": "MF", "recall": 1, "ndcg": 0.5}
+{"user_id": 1273, "method": "Baseline", "recall": 0, "ndcg": 0.0}
+{"user_id": 1273, "method": "ChatGPT-Direct", "recall": 0, "ndcg": 0.0}
+{"user_id": 1273, "method": "Ours (NMF)", "recall": 0, "ndcg": 0.0}
+{"user_id": 1273, "method": "Ours+History (NMF)", "recall": 0, "ndcg": 0.0}
+{"user_id": 1273, "method": "Ours (FA)", "recall": 1, "ndcg": 0.3010299956639812}
+{"user_id": 1273, "method": "Ours+History (FA)", "recall": 1, "ndcg": 0.2890648263178879}
+{"user_id": 2095, "method": "UserKNN", "recall": 1, "ndcg": 0.3333333333333333}
+{"user_id": 2095, "method": "MF", "recall": 1, "ndcg": 0.38685280723454163}
+{"user_id": 2095, "method": "Baseline", "recall": 1, "ndcg": 0.2890648263178879}
+{"user_id": 2095, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 2095, "method": "Ours (NMF)", "recall": 1, "ndcg": 0.38685280723454163}
+{"user_id": 2095, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 0.38685280723454163}
+{"user_id": 2095, "method": "Ours (FA)", "recall": 1, "ndcg": 0.3562071871080222}
+{"user_id": 2095, "method": "Ours+History (FA)", "recall": 1, "ndcg": 0.3562071871080222}
+{"user_id": 4924, "method": "UserKNN", "recall": 1, "ndcg": 0.43067655807339306}
+{"user_id": 4924, "method": "MF", "recall": 0, "ndcg": 0.0}
+{"user_id": 4924, "method": "Baseline", "recall": 1, "ndcg": 0.3333333333333333}
+{"user_id": 4924, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 0.38685280723454163}
+{"user_id": 4924, "method": "Ours (NMF)", "recall": 1, "ndcg": 1.0}
+{"user_id": 4924, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 1.0}
+{"user_id": 4924, "method": "Ours (FA)", "recall": 1, "ndcg": 0.43067655807339306}
+{"user_id": 4924, "method": "Ours+History (FA)", "recall": 1, "ndcg": 0.5}
+{"user_id": 2317, "method": "UserKNN", "recall": 1, "ndcg": 0.38685280723454163}
+{"user_id": 2317, "method": "MF", "recall": 1, "ndcg": 0.43067655807339306}
+{"user_id": 2317, "method": "Baseline", "recall": 1, "ndcg": 0.43067655807339306}
+{"user_id": 2317, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 0.3333333333333333}
+{"user_id": 2317, "method": "Ours (NMF)", "recall": 1, "ndcg": 0.5}
+{"user_id": 2317, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 0.43067655807339306}
+{"user_id": 2317, "method": "Ours (FA)", "recall": 0, "ndcg": 0.0}
+{"user_id": 2317, "method": "Ours+History (FA)", "recall": 1, "ndcg": 0.3010299956639812}
+{"user_id": 743, "method": "UserKNN", "recall": 1, "ndcg": 0.3333333333333333}
+{"user_id": 743, "method": "MF", "recall": 1, "ndcg": 1.0}
+{"user_id": 743, "method": "Baseline", "recall": 1, "ndcg": 0.43067655807339306}
+{"user_id": 743, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 1.0}
+{"user_id": 743, "method": "Ours (NMF)", "recall": 1, "ndcg": 0.43067655807339306}
+{"user_id": 743, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 0.43067655807339306}
+{"user_id": 743, "method": "Ours (FA)", "recall": 1, "ndcg": 0.3562071871080222}
+{"user_id": 743, "method": "Ours+History (FA)", "recall": 1, "ndcg": 0.3333333333333333}
+{"user_id": 3695, "method": "UserKNN", "recall": 1, "ndcg": 0.3562071871080222}
+{"user_id": 3695, "method": "MF", "recall": 1, "ndcg": 0.38685280723454163}
+{"user_id": 3695, "method": "Baseline", "recall": 0, "ndcg": 0.0}
+{"user_id": 3695, "method": "ChatGPT-Direct", "recall": 0, "ndcg": 0.0}
+{"user_id": 3695, "method": "Ours (NMF)", "recall": 1, "ndcg": 0.3333333333333333}
+{"user_id": 3695, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 0.3333333333333333}
+{"user_id": 3695, "method": "Ours (FA)", "recall": 1, "ndcg": 0.43067655807339306}
+{"user_id": 3695, "method": "Ours+History (FA)", "recall": 1, "ndcg": 0.5}
+{"user_id": 409, "method": "UserKNN", "recall": 1, "ndcg": 1.0}
+{"user_id": 409, "method": "MF", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 409, "method": "Baseline", "recall": 1, "ndcg": 0.3562071871080222}
+{"user_id": 409, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 0.43067655807339306}
+{"user_id": 409, "method": "Ours (NMF)", "recall": 1, "ndcg": 0.5}
+{"user_id": 409, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 0.5}
+{"user_id": 409, "method": "Ours (FA)", "recall": 1, "ndcg": 0.31546487678572877}
+{"user_id": 409, "method": "Ours+History (FA)", "recall": 1, "ndcg": 0.3333333333333333}
+{"user_id": 297, "method": "UserKNN", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 297, "method": "MF", "recall": 1, "ndcg": 1.0}
+{"user_id": 297, "method": "Baseline", "recall": 1, "ndcg": 0.3562071871080222}
+{"user_id": 297, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 1.0}
+{"user_id": 297, "method": "Ours (NMF)", "recall": 1, "ndcg": 0.3562071871080222}
+{"user_id": 297, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 0.31546487678572877}
+{"user_id": 297, "method": "Ours (FA)", "recall": 0, "ndcg": 0.0}
+{"user_id": 297, "method": "Ours+History (FA)", "recall": 0, "ndcg": 0.0}
+{"user_id": 5286, "method": "UserKNN", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 5286, "method": "MF", "recall": 1, "ndcg": 0.31546487678572877}
+{"user_id": 5286, "method": "Baseline", "recall": 1, "ndcg": 0.3010299956639812}
+{"user_id": 5286, "method": "ChatGPT-Direct", "recall": 0, "ndcg": 0.0}
+{"user_id": 5286, "method": "Ours (NMF)", "recall": 1, "ndcg": 0.3010299956639812}
+{"user_id": 5286, "method": "Ours+History (NMF)", "recall": 0, "ndcg": 0.0}
+{"user_id": 5286, "method": "Ours (FA)", "recall": 1, "ndcg": 0.5}
+{"user_id": 5286, "method": "Ours+History (FA)", "recall": 1, "ndcg": 0.5}
+{"user_id": 1143, "method": "UserKNN", "recall": 1, "ndcg": 0.43067655807339306}
+{"user_id": 1143, "method": "MF", "recall": 1, "ndcg": 0.5}
+{"user_id": 1143, "method": "Baseline", "recall": 0, "ndcg": 0.0}
+{"user_id": 1143, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 1.0}
+{"user_id": 1143, "method": "Ours (NMF)", "recall": 0, "ndcg": 0.0}
+{"user_id": 1143, "method": "Ours+History (NMF)", "recall": 0, "ndcg": 0.0}
+{"user_id": 1143, "method": "Ours (FA)", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 1143, "method": "Ours+History (FA)", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 3950, "method": "UserKNN", "recall": 0, "ndcg": 0.0}
+{"user_id": 3950, "method": "MF", "recall": 1, "ndcg": 0.43067655807339306}
+{"user_id": 3950, "method": "Baseline", "recall": 1, "ndcg": 0.3562071871080222}
+{"user_id": 3950, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 1.0}
+{"user_id": 3950, "method": "Ours (NMF)", "recall": 1, "ndcg": 0.3010299956639812}
+{"user_id": 3950, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 0.31546487678572877}
+{"user_id": 3950, "method": "Ours (FA)", "recall": 0, "ndcg": 0.0}
+{"user_id": 3950, "method": "Ours+History (FA)", "recall": 0, "ndcg": 0.0}
+{"user_id": 2054, "method": "UserKNN", "recall": 1, "ndcg": 0.5}
+{"user_id": 2054, "method": "MF", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 2054, "method": "Baseline", "recall": 1, "ndcg": 0.3333333333333333}
+{"user_id": 2054, "method": "ChatGPT-Direct", "recall": 0, "ndcg": 0.0}
+{"user_id": 2054, "method": "Ours (NMF)", "recall": 1, "ndcg": 1.0}
+{"user_id": 2054, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 1.0}
+{"user_id": 2054, "method": "Ours (FA)", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 2054, "method": "Ours+History (FA)", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 5594, "method": "UserKNN", "recall": 0, "ndcg": 0.0}
+{"user_id": 5594, "method": "MF", "recall": 0, "ndcg": 0.0}
+{"user_id": 5594, "method": "Baseline", "recall": 0, "ndcg": 0.0}
+{"user_id": 5594, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 0.5}
+{"user_id": 5594, "method": "Ours (NMF)", "recall": 0, "ndcg": 0.0}
+{"user_id": 5594, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 0.3010299956639812}
+{"user_id": 5594, "method": "Ours (FA)", "recall": 0, "ndcg": 0.0}
+{"user_id": 5594, "method": "Ours+History (FA)", "recall": 0, "ndcg": 0.0}
+{"user_id": 866, "method": "UserKNN", "recall": 1, "ndcg": 1.0}
+{"user_id": 866, "method": "MF", "recall": 1, "ndcg": 1.0}
+{"user_id": 866, "method": "Baseline", "recall": 0, "ndcg": 0.0}
+{"user_id": 866, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 0.38685280723454163}
+{"user_id": 866, "method": "Ours (NMF)", "recall": 1, "ndcg": 1.0}
+{"user_id": 866, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 1.0}
+{"user_id": 866, "method": "Ours (FA)", "recall": 1, "ndcg": 1.0}
+{"user_id": 866, "method": "Ours+History (FA)", "recall": 1, "ndcg": 1.0}
+{"user_id": 5759, "method": "UserKNN", "recall": 1, "ndcg": 0.3333333333333333}
+{"user_id": 5759, "method": "MF", "recall": 1, "ndcg": 0.43067655807339306}
+{"user_id": 5759, "method": "Baseline", "recall": 0, "ndcg": 0.0}
+{"user_id": 5759, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 0.31546487678572877}
+{"user_id": 5759, "method": "Ours (NMF)", "recall": 0, "ndcg": 0.0}
+{"user_id": 5759, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 0.2890648263178879}
+{"user_id": 5759, "method": "Ours (FA)", "recall": 0, "ndcg": 0.0}
+{"user_id": 5759, "method": "Ours+History (FA)", "recall": 0, "ndcg": 0.0}
+{"user_id": 806, "method": "UserKNN", "recall": 1, "ndcg": 0.38685280723454163}
+{"user_id": 806, "method": "MF", "recall": 1, "ndcg": 0.5}
+{"user_id": 806, "method": "Baseline", "recall": 0, "ndcg": 0.0}
+{"user_id": 806, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 1.0}
+{"user_id": 806, "method": "Ours (NMF)", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 806, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 806, "method": "Ours (FA)", "recall": 0, "ndcg": 0.0}
+{"user_id": 806, "method": "Ours+History (FA)", "recall": 1, "ndcg": 0.3333333333333333}
+{"user_id": 4818, "method": "UserKNN", "recall": 1, "ndcg": 0.3333333333333333}
+{"user_id": 4818, "method": "MF", "recall": 1, "ndcg": 0.2890648263178879}
+{"user_id": 4818, "method": "Baseline", "recall": 1, "ndcg": 1.0}
+{"user_id": 4818, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 1.0}
+{"user_id": 4818, "method": "Ours (NMF)", "recall": 1, "ndcg": 0.43067655807339306}
+{"user_id": 4818, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 0.43067655807339306}
+{"user_id": 4818, "method": "Ours (FA)", "recall": 1, "ndcg": 0.3333333333333333}
+{"user_id": 4818, "method": "Ours+History (FA)", "recall": 1, "ndcg": 0.38685280723454163}
+{"user_id": 656, "method": "UserKNN", "recall": 1, "ndcg": 0.3562071871080222}
+{"user_id": 656, "method": "MF", "recall": 1, "ndcg": 0.31546487678572877}
+{"user_id": 656, "method": "Baseline", "recall": 0, "ndcg": 0.0}
+{"user_id": 656, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 0.31546487678572877}
+{"user_id": 656, "method": "Ours (NMF)", "recall": 1, "ndcg": 0.3333333333333333}
+{"user_id": 656, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 0.3010299956639812}
+{"user_id": 656, "method": "Ours (FA)", "recall": 0, "ndcg": 0.0}
+{"user_id": 656, "method": "Ours+History (FA)", "recall": 0, "ndcg": 0.0}
+{"user_id": 5671, "method": "UserKNN", "recall": 1, "ndcg": 0.3333333333333333}
+{"user_id": 5671, "method": "MF", "recall": 1, "ndcg": 1.0}
+{"user_id": 5671, "method": "Baseline", "recall": 1, "ndcg": 0.3562071871080222}
+{"user_id": 5671, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 1.0}
+{"user_id": 5671, "method": "Ours (NMF)", "recall": 1, "ndcg": 0.5}
+{"user_id": 5671, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 0.5}
+{"user_id": 5671, "method": "Ours (FA)", "recall": 1, "ndcg": 1.0}
+{"user_id": 5671, "method": "Ours+History (FA)", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 2516, "method": "UserKNN", "recall": 0, "ndcg": 0.0}
+{"user_id": 2516, "method": "MF", "recall": 0, "ndcg": 0.0}
+{"user_id": 2516, "method": "Baseline", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 2516, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 2516, "method": "Ours (NMF)", "recall": 1, "ndcg": 0.5}
+{"user_id": 2516, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 0.5}
+{"user_id": 2516, "method": "Ours (FA)", "recall": 0, "ndcg": 0.0}
+{"user_id": 2516, "method": "Ours+History (FA)", "recall": 1, "ndcg": 0.38685280723454163}
+{"user_id": 24, "method": "UserKNN", "recall": 0, "ndcg": 0.0}
+{"user_id": 24, "method": "MF", "recall": 0, "ndcg": 0.0}
+{"user_id": 24, "method": "Baseline", "recall": 1, "ndcg": 0.2890648263178879}
+{"user_id": 24, "method": "ChatGPT-Direct", "recall": 0, "ndcg": 0.0}
+{"user_id": 24, "method": "Ours (NMF)", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 24, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 24, "method": "Ours (FA)", "recall": 0, "ndcg": 0.0}
+{"user_id": 24, "method": "Ours+History (FA)", "recall": 1, "ndcg": 0.3333333333333333}
+{"user_id": 1422, "method": "UserKNN", "recall": 1, "ndcg": 0.5}
+{"user_id": 1422, "method": "MF", "recall": 1, "ndcg": 0.5}
+{"user_id": 1422, "method": "Baseline", "recall": 1, "ndcg": 0.43067655807339306}
+{"user_id": 1422, "method": "ChatGPT-Direct", "recall": 0, "ndcg": 0.0}
+{"user_id": 1422, "method": "Ours (NMF)", "recall": 1, "ndcg": 0.3562071871080222}
+{"user_id": 1422, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 0.3333333333333333}
+{"user_id": 1422, "method": "Ours (FA)", "recall": 1, "ndcg": 0.43067655807339306}
+{"user_id": 1422, "method": "Ours+History (FA)", "recall": 1, "ndcg": 0.38685280723454163}
+{"user_id": 5256, "method": "UserKNN", "recall": 1, "ndcg": 0.5}
+{"user_id": 5256, "method": "MF", "recall": 1, "ndcg": 0.43067655807339306}
+{"user_id": 5256, "method": "Baseline", "recall": 1, "ndcg": 0.38685280723454163}
+{"user_id": 5256, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 1.0}
+{"user_id": 5256, "method": "Ours (NMF)", "recall": 1, "ndcg": 1.0}
+{"user_id": 5256, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 1.0}
+{"user_id": 5256, "method": "Ours (FA)", "recall": 1, "ndcg": 1.0}
+{"user_id": 5256, "method": "Ours+History (FA)", "recall": 1, "ndcg": 1.0}
+{"user_id": 5655, "method": "UserKNN", "recall": 1, "ndcg": 0.43067655807339306}
+{"user_id": 5655, "method": "MF", "recall": 1, "ndcg": 0.43067655807339306}
+{"user_id": 5655, "method": "Baseline", "recall": 1, "ndcg": 1.0}
+{"user_id": 5655, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 1.0}
+{"user_id": 5655, "method": "Ours (NMF)", "recall": 1, "ndcg": 0.3562071871080222}
+{"user_id": 5655, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 0.3562071871080222}
+{"user_id": 5655, "method": "Ours (FA)", "recall": 1, "ndcg": 0.3010299956639812}
+{"user_id": 5655, "method": "Ours+History (FA)", "recall": 1, "ndcg": 0.38685280723454163}
+{"user_id": 2437, "method": "UserKNN", "recall": 1, "ndcg": 0.3333333333333333}
+{"user_id": 2437, "method": "MF", "recall": 1, "ndcg": 0.38685280723454163}
+{"user_id": 2437, "method": "Baseline", "recall": 1, "ndcg": 0.5}
+{"user_id": 2437, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 0.3010299956639812}
+{"user_id": 2437, "method": "Ours (NMF)", "recall": 1, "ndcg": 0.38685280723454163}
+{"user_id": 2437, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 0.38685280723454163}
+{"user_id": 2437, "method": "Ours (FA)", "recall": 0, "ndcg": 0.0}
+{"user_id": 2437, "method": "Ours+History (FA)", "recall": 0, "ndcg": 0.0}
+{"user_id": 4161, "method": "UserKNN", "recall": 0, "ndcg": 0.0}
+{"user_id": 4161, "method": "MF", "recall": 0, "ndcg": 0.0}
+{"user_id": 4161, "method": "Baseline", "recall": 0, "ndcg": 0.0}
+{"user_id": 4161, "method": "ChatGPT-Direct", "recall": 0, "ndcg": 0.0}
+{"user_id": 4161, "method": "Ours (NMF)", "recall": 1, "ndcg": 0.2890648263178879}
+{"user_id": 4161, "method": "Ours+History (NMF)", "recall": 0, "ndcg": 0.0}
+{"user_id": 4161, "method": "Ours (FA)", "recall": 0, "ndcg": 0.0}
+{"user_id": 4161, "method": "Ours+History (FA)", "recall": 0, "ndcg": 0.0}
+{"user_id": 1631, "method": "UserKNN", "recall": 1, "ndcg": 0.3562071871080222}
+{"user_id": 1631, "method": "MF", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 1631, "method": "Baseline", "recall": 1, "ndcg": 0.43067655807339306}
+{"user_id": 1631, "method": "ChatGPT-Direct", "recall": 0, "ndcg": 0.0}
+{"user_id": 1631, "method": "Ours (NMF)", "recall": 1, "ndcg": 1.0}
+{"user_id": 1631, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 1.0}
+{"user_id": 1631, "method": "Ours (FA)", "recall": 1, "ndcg": 0.3010299956639812}
+{"user_id": 1631, "method": "Ours+History (FA)", "recall": 1, "ndcg": 0.3010299956639812}
+{"user_id": 2518, "method": "UserKNN", "recall": 0, "ndcg": 0.0}
+{"user_id": 2518, "method": "MF", "recall": 0, "ndcg": 0.0}
+{"user_id": 2518, "method": "Baseline", "recall": 1, "ndcg": 0.38685280723454163}
+{"user_id": 2518, "method": "ChatGPT-Direct", "recall": 0, "ndcg": 0.0}
+{"user_id": 2518, "method": "Ours (NMF)", "recall": 0, "ndcg": 0.0}
+{"user_id": 2518, "method": "Ours+History (NMF)", "recall": 0, "ndcg": 0.0}
+{"user_id": 2518, "method": "Ours (FA)", "recall": 0, "ndcg": 0.0}
+{"user_id": 2518, "method": "Ours+History (FA)", "recall": 1, "ndcg": 0.3010299956639812}
+{"user_id": 3586, "method": "UserKNN", "recall": 1, "ndcg": 0.3010299956639812}
+{"user_id": 3586, "method": "MF", "recall": 1, "ndcg": 0.43067655807339306}
+{"user_id": 3586, "method": "Baseline", "recall": 0, "ndcg": 0.0}
+{"user_id": 3586, "method": "ChatGPT-Direct", "recall": 0, "ndcg": 0.0}
+{"user_id": 3586, "method": "Ours (NMF)", "recall": 0, "ndcg": 0.0}
+{"user_id": 3586, "method": "Ours+History (NMF)", "recall": 0, "ndcg": 0.0}
+{"user_id": 3586, "method": "Ours (FA)", "recall": 1, "ndcg": 0.3333333333333333}
+{"user_id": 3586, "method": "Ours+History (FA)", "recall": 1, "ndcg": 0.3333333333333333}
+{"user_id": 2858, "method": "UserKNN", "recall": 1, "ndcg": 0.3010299956639812}
+{"user_id": 2858, "method": "MF", "recall": 0, "ndcg": 0.0}
+{"user_id": 2858, "method": "Baseline", "recall": 1, "ndcg": 1.0}
+{"user_id": 2858, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 0.38685280723454163}
+{"user_id": 2858, "method": "Ours (NMF)", "recall": 1, "ndcg": 0.31546487678572877}
+{"user_id": 2858, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 0.2890648263178879}
+{"user_id": 2858, "method": "Ours (FA)", "recall": 0, "ndcg": 0.0}
+{"user_id": 2858, "method": "Ours+History (FA)", "recall": 0, "ndcg": 0.0}
+{"user_id": 5386, "method": "UserKNN", "recall": 1, "ndcg": 0.3010299956639812}
+{"user_id": 5386, "method": "MF", "recall": 0, "ndcg": 0.0}
+{"user_id": 5386, "method": "Baseline", "recall": 0, "ndcg": 0.0}
+{"user_id": 5386, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 0.3562071871080222}
+{"user_id": 5386, "method": "Ours (NMF)", "recall": 1, "ndcg": 0.3562071871080222}
+{"user_id": 5386, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 0.3333333333333333}
+{"user_id": 5386, "method": "Ours (FA)", "recall": 1, "ndcg": 0.5}
+{"user_id": 5386, "method": "Ours+History (FA)", "recall": 1, "ndcg": 0.3562071871080222}
+{"user_id": 5635, "method": "UserKNN", "recall": 1, "ndcg": 0.3333333333333333}
+{"user_id": 5635, "method": "MF", "recall": 1, "ndcg": 0.5}
+{"user_id": 5635, "method": "Baseline", "recall": 0, "ndcg": 0.0}
+{"user_id": 5635, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 5635, "method": "Ours (NMF)", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 5635, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 5635, "method": "Ours (FA)", "recall": 1, "ndcg": 0.5}
+{"user_id": 5635, "method": "Ours+History (FA)", "recall": 1, "ndcg": 0.5}
+{"user_id": 4490, "method": "UserKNN", "recall": 0, "ndcg": 0.0}
+{"user_id": 4490, "method": "MF", "recall": 0, "ndcg": 0.0}
+{"user_id": 4490, "method": "Baseline", "recall": 0, "ndcg": 0.0}
+{"user_id": 4490, "method": "ChatGPT-Direct", "recall": 0, "ndcg": 0.0}
+{"user_id": 4490, "method": "Ours (NMF)", "recall": 0, "ndcg": 0.0}
+{"user_id": 4490, "method": "Ours+History (NMF)", "recall": 0, "ndcg": 0.0}
+{"user_id": 4490, "method": "Ours (FA)", "recall": 0, "ndcg": 0.0}
+{"user_id": 4490, "method": "Ours+History (FA)", "recall": 1, "ndcg": 0.2890648263178879}
+{"user_id": 2967, "method": "UserKNN", "recall": 1, "ndcg": 0.5}
+{"user_id": 2967, "method": "MF", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 2967, "method": "Baseline", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 2967, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 1.0}
+{"user_id": 2967, "method": "Ours (NMF)", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 2967, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 0.43067655807339306}
+{"user_id": 2967, "method": "Ours (FA)", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 2967, "method": "Ours+History (FA)", "recall": 1, "ndcg": 0.43067655807339306}
+{"user_id": 4743, "method": "UserKNN", "recall": 1, "ndcg": 1.0}
+{"user_id": 4743, "method": "MF", "recall": 1, "ndcg": 1.0}
+{"user_id": 4743, "method": "Baseline", "recall": 1, "ndcg": 0.3333333333333333}
+{"user_id": 4743, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 1.0}
+{"user_id": 4743, "method": "Ours (NMF)", "recall": 1, "ndcg": 0.43067655807339306}
+{"user_id": 4743, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 0.43067655807339306}
+{"user_id": 4743, "method": "Ours (FA)", "recall": 1, "ndcg": 1.0}
+{"user_id": 4743, "method": "Ours+History (FA)", "recall": 1, "ndcg": 1.0}
+{"user_id": 255, "method": "UserKNN", "recall": 0, "ndcg": 0.0}
+{"user_id": 255, "method": "MF", "recall": 0, "ndcg": 0.0}
+{"user_id": 255, "method": "Baseline", "recall": 1, "ndcg": 0.3010299956639812}
+{"user_id": 255, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 1.0}
+{"user_id": 255, "method": "Ours (NMF)", "recall": 1, "ndcg": 0.3333333333333333}
+{"user_id": 255, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 0.43067655807339306}
+{"user_id": 255, "method": "Ours (FA)", "recall": 0, "ndcg": 0.0}
+{"user_id": 255, "method": "Ours+History (FA)", "recall": 1, "ndcg": 0.2890648263178879}
+{"user_id": 2550, "method": "UserKNN", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 2550, "method": "MF", "recall": 1, "ndcg": 0.38685280723454163}
+{"user_id": 2550, "method": "Baseline", "recall": 1, "ndcg": 0.43067655807339306}
+{"user_id": 2550, "method": "ChatGPT-Direct", "recall": 0, "ndcg": 0.0}
+{"user_id": 2550, "method": "Ours (NMF)", "recall": 0, "ndcg": 0.0}
+{"user_id": 2550, "method": "Ours+History (NMF)", "recall": 0, "ndcg": 0.0}
+{"user_id": 2550, "method": "Ours (FA)", "recall": 0, "ndcg": 0.0}
+{"user_id": 2550, "method": "Ours+History (FA)", "recall": 0, "ndcg": 0.0}
+{"user_id": 1194, "method": "UserKNN", "recall": 0, "ndcg": 0.0}
+{"user_id": 1194, "method": "MF", "recall": 0, "ndcg": 0.0}
+{"user_id": 1194, "method": "Baseline", "recall": 1, "ndcg": 0.31546487678572877}
+{"user_id": 1194, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 0.3562071871080222}
+{"user_id": 1194, "method": "Ours (NMF)", "recall": 1, "ndcg": 0.3562071871080222}
+{"user_id": 1194, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 0.3562071871080222}
+{"user_id": 1194, "method": "Ours (FA)", "recall": 0, "ndcg": 0.0}
+{"user_id": 1194, "method": "Ours+History (FA)", "recall": 1, "ndcg": 0.3333333333333333}
+{"user_id": 4249, "method": "UserKNN", "recall": 0, "ndcg": 0.0}
+{"user_id": 4249, "method": "MF", "recall": 0, "ndcg": 0.0}
+{"user_id": 4249, "method": "Baseline", "recall": 0, "ndcg": 0.0}
+{"user_id": 4249, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 0.43067655807339306}
+{"user_id": 4249, "method": "Ours (NMF)", "recall": 1, "ndcg": 0.3562071871080222}
+{"user_id": 4249, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 0.3562071871080222}
+{"user_id": 4249, "method": "Ours (FA)", "recall": 0, "ndcg": 0.0}
+{"user_id": 4249, "method": "Ours+History (FA)", "recall": 0, "ndcg": 0.0}
+{"user_id": 1742, "method": "UserKNN", "recall": 0, "ndcg": 0.0}
+{"user_id": 1742, "method": "MF", "recall": 0, "ndcg": 0.0}
+{"user_id": 1742, "method": "Baseline", "recall": 1, "ndcg": 0.3010299956639812}
+{"user_id": 1742, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 1.0}
+{"user_id": 1742, "method": "Ours (NMF)", "recall": 1, "ndcg": 1.0}
+{"user_id": 1742, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 1.0}
+{"user_id": 1742, "method": "Ours (FA)", "recall": 1, "ndcg": 0.38685280723454163}
+{"user_id": 1742, "method": "Ours+History (FA)", "recall": 1, "ndcg": 0.38685280723454163}
+{"user_id": 222, "method": "UserKNN", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 222, "method": "MF", "recall": 1, "ndcg": 0.5}
+{"user_id": 222, "method": "Baseline", "recall": 1, "ndcg": 0.5}
+{"user_id": 222, "method": "ChatGPT-Direct", "recall": 0, "ndcg": 0.0}
+{"user_id": 222, "method": "Ours (NMF)", "recall": 1, "ndcg": 0.5}
+{"user_id": 222, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 0.43067655807339306}
+{"user_id": 222, "method": "Ours (FA)", "recall": 0, "ndcg": 0.0}
+{"user_id": 222, "method": "Ours+History (FA)", "recall": 1, "ndcg": 0.3010299956639812}
+{"user_id": 4221, "method": "UserKNN", "recall": 1, "ndcg": 0.38685280723454163}
+{"user_id": 4221, "method": "MF", "recall": 1, "ndcg": 1.0}
+{"user_id": 4221, "method": "Baseline", "recall": 0, "ndcg": 0.0}
+{"user_id": 4221, "method": "ChatGPT-Direct", "recall": 0, "ndcg": 0.0}
+{"user_id": 4221, "method": "Ours (NMF)", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 4221, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 0.38685280723454163}
+{"user_id": 4221, "method": "Ours (FA)", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 4221, "method": "Ours+History (FA)", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 1162, "method": "UserKNN", "recall": 1, "ndcg": 0.5}
+{"user_id": 1162, "method": "MF", "recall": 1, "ndcg": 1.0}
+{"user_id": 1162, "method": "Baseline", "recall": 1, "ndcg": 0.31546487678572877}
+{"user_id": 1162, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 0.31546487678572877}
+{"user_id": 1162, "method": "Ours (NMF)", "recall": 0, "ndcg": 0.0}
+{"user_id": 1162, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 0.3010299956639812}
+{"user_id": 1162, "method": "Ours (FA)", "recall": 1, "ndcg": 0.43067655807339306}
+{"user_id": 1162, "method": "Ours+History (FA)", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 1401, "method": "UserKNN", "recall": 1, "ndcg": 0.5}
+{"user_id": 1401, "method": "MF", "recall": 1, "ndcg": 0.38685280723454163}
+{"user_id": 1401, "method": "Baseline", "recall": 1, "ndcg": 0.3562071871080222}
+{"user_id": 1401, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 0.3562071871080222}
+{"user_id": 1401, "method": "Ours (NMF)", "recall": 1, "ndcg": 1.0}
+{"user_id": 1401, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 1401, "method": "Ours (FA)", "recall": 1, "ndcg": 0.5}
+{"user_id": 1401, "method": "Ours+History (FA)", "recall": 1, "ndcg": 0.5}
+{"user_id": 882, "method": "UserKNN", "recall": 0, "ndcg": 0.0}
+{"user_id": 882, "method": "MF", "recall": 0, "ndcg": 0.0}
+{"user_id": 882, "method": "Baseline", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 882, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 1.0}
+{"user_id": 882, "method": "Ours (NMF)", "recall": 0, "ndcg": 0.0}
+{"user_id": 882, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 0.3010299956639812}
+{"user_id": 882, "method": "Ours (FA)", "recall": 1, "ndcg": 0.43067655807339306}
+{"user_id": 882, "method": "Ours+History (FA)", "recall": 1, "ndcg": 0.5}
+{"user_id": 4352, "method": "UserKNN", "recall": 1, "ndcg": 0.3333333333333333}
+{"user_id": 4352, "method": "MF", "recall": 1, "ndcg": 0.5}
+{"user_id": 4352, "method": "Baseline", "recall": 1, "ndcg": 0.38685280723454163}
+{"user_id": 4352, "method": "ChatGPT-Direct", "recall": 0, "ndcg": 0.0}
+{"user_id": 4352, "method": "Ours (NMF)", "recall": 1, "ndcg": 0.2890648263178879}
+{"user_id": 4352, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 0.3010299956639812}
+{"user_id": 4352, "method": "Ours (FA)", "recall": 0, "ndcg": 0.0}
+{"user_id": 4352, "method": "Ours+History (FA)", "recall": 0, "ndcg": 0.0}
+{"user_id": 5673, "method": "UserKNN", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 5673, "method": "MF", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 5673, "method": "Baseline", "recall": 1, "ndcg": 0.5}
+{"user_id": 5673, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 0.3562071871080222}
+{"user_id": 5673, "method": "Ours (NMF)", "recall": 1, "ndcg": 1.0}
+{"user_id": 5673, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 1.0}
+{"user_id": 5673, "method": "Ours (FA)", "recall": 1, "ndcg": 0.5}
+{"user_id": 5673, "method": "Ours+History (FA)", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 4796, "method": "UserKNN", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 4796, "method": "MF", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 4796, "method": "Baseline", "recall": 1, "ndcg": 0.43067655807339306}
+{"user_id": 4796, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 0.2890648263178879}
+{"user_id": 4796, "method": "Ours (NMF)", "recall": 0, "ndcg": 0.0}
+{"user_id": 4796, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 0.3010299956639812}
+{"user_id": 4796, "method": "Ours (FA)", "recall": 1, "ndcg": 0.38685280723454163}
+{"user_id": 4796, "method": "Ours+History (FA)", "recall": 1, "ndcg": 0.43067655807339306}
+{"user_id": 566, "method": "UserKNN", "recall": 1, "ndcg": 0.3010299956639812}
+{"user_id": 566, "method": "MF", "recall": 0, "ndcg": 0.0}
+{"user_id": 566, "method": "Baseline", "recall": 0, "ndcg": 0.0}
+{"user_id": 566, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 0.3562071871080222}
+{"user_id": 566, "method": "Ours (NMF)", "recall": 0, "ndcg": 0.0}
+{"user_id": 566, "method": "Ours+History (NMF)", "recall": 0, "ndcg": 0.0}
+{"user_id": 566, "method": "Ours (FA)", "recall": 0, "ndcg": 0.0}
+{"user_id": 566, "method": "Ours+History (FA)", "recall": 0, "ndcg": 0.0}
+{"user_id": 756, "method": "UserKNN", "recall": 1, "ndcg": 0.5}
+{"user_id": 756, "method": "MF", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 756, "method": "Baseline", "recall": 0, "ndcg": 0.0}
+{"user_id": 756, "method": "ChatGPT-Direct", "recall": 0, "ndcg": 0.0}
+{"user_id": 756, "method": "Ours (NMF)", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 756, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 756, "method": "Ours (FA)", "recall": 1, "ndcg": 0.5}
+{"user_id": 756, "method": "Ours+History (FA)", "recall": 1, "ndcg": 0.5}
+{"user_id": 3694, "method": "UserKNN", "recall": 0, "ndcg": 0.0}
+{"user_id": 3694, "method": "MF", "recall": 0, "ndcg": 0.0}
+{"user_id": 3694, "method": "Baseline", "recall": 1, "ndcg": 0.3010299956639812}
+{"user_id": 3694, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 1.0}
+{"user_id": 3694, "method": "Ours (NMF)", "recall": 1, "ndcg": 0.3010299956639812}
+{"user_id": 3694, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 0.3562071871080222}
+{"user_id": 3694, "method": "Ours (FA)", "recall": 0, "ndcg": 0.0}
+{"user_id": 3694, "method": "Ours+History (FA)", "recall": 0, "ndcg": 0.0}
+{"user_id": 2500, "method": "UserKNN", "recall": 0, "ndcg": 0.0}
+{"user_id": 2500, "method": "MF", "recall": 0, "ndcg": 0.0}
+{"user_id": 2500, "method": "Baseline", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 2500, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 1.0}
+{"user_id": 2500, "method": "Ours (NMF)", "recall": 0, "ndcg": 0.0}
+{"user_id": 2500, "method": "Ours+History (NMF)", "recall": 0, "ndcg": 0.0}
+{"user_id": 2500, "method": "Ours (FA)", "recall": 0, "ndcg": 0.0}
+{"user_id": 2500, "method": "Ours+History (FA)", "recall": 1, "ndcg": 0.3562071871080222}
+{"user_id": 1877, "method": "UserKNN", "recall": 0, "ndcg": 0.0}
+{"user_id": 1877, "method": "MF", "recall": 0, "ndcg": 0.0}
+{"user_id": 1877, "method": "Baseline", "recall": 1, "ndcg": 0.3333333333333333}
+{"user_id": 1877, "method": "ChatGPT-Direct", "recall": 0, "ndcg": 0.0}
+{"user_id": 1877, "method": "Ours (NMF)", "recall": 1, "ndcg": 0.3333333333333333}
+{"user_id": 1877, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 0.3333333333333333}
+{"user_id": 1877, "method": "Ours (FA)", "recall": 1, "ndcg": 0.38685280723454163}
+{"user_id": 1877, "method": "Ours+History (FA)", "recall": 1, "ndcg": 0.43067655807339306}
+{"user_id": 80, "method": "UserKNN", "recall": 1, "ndcg": 0.5}
+{"user_id": 80, "method": "MF", "recall": 1, "ndcg": 1.0}
+{"user_id": 80, "method": "Baseline", "recall": 1, "ndcg": 0.3562071871080222}
+{"user_id": 80, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 1.0}
+{"user_id": 80, "method": "Ours (NMF)", "recall": 1, "ndcg": 0.5}
+{"user_id": 80, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 0.5}
+{"user_id": 80, "method": "Ours (FA)", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 80, "method": "Ours+History (FA)", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 2804, "method": "UserKNN", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 2804, "method": "MF", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 2804, "method": "Baseline", "recall": 1, "ndcg": 0.3562071871080222}
+{"user_id": 2804, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 2804, "method": "Ours (NMF)", "recall": 1, "ndcg": 0.3010299956639812}
+{"user_id": 2804, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 0.3333333333333333}
+{"user_id": 2804, "method": "Ours (FA)", "recall": 0, "ndcg": 0.0}
+{"user_id": 2804, "method": "Ours+History (FA)", "recall": 0, "ndcg": 0.0}
+{"user_id": 2338, "method": "UserKNN", "recall": 1, "ndcg": 0.3333333333333333}
+{"user_id": 2338, "method": "MF", "recall": 1, "ndcg": 0.43067655807339306}
+{"user_id": 2338, "method": "Baseline", "recall": 0, "ndcg": 0.0}
+{"user_id": 2338, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 2338, "method": "Ours (NMF)", "recall": 1, "ndcg": 0.5}
+{"user_id": 2338, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 0.38685280723454163}
+{"user_id": 2338, "method": "Ours (FA)", "recall": 1, "ndcg": 0.43067655807339306}
+{"user_id": 2338, "method": "Ours+History (FA)", "recall": 1, "ndcg": 0.43067655807339306}
+{"user_id": 5591, "method": "UserKNN", "recall": 1, "ndcg": 0.38685280723454163}
+{"user_id": 5591, "method": "MF", "recall": 1, "ndcg": 0.5}
+{"user_id": 5591, "method": "Baseline", "recall": 1, "ndcg": 0.43067655807339306}
+{"user_id": 5591, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 0.3333333333333333}
+{"user_id": 5591, "method": "Ours (NMF)", "recall": 1, "ndcg": 0.38685280723454163}
+{"user_id": 5591, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 5591, "method": "Ours (FA)", "recall": 1, "ndcg": 0.3562071871080222}
+{"user_id": 5591, "method": "Ours+History (FA)", "recall": 1, "ndcg": 0.43067655807339306}
+{"user_id": 764, "method": "UserKNN", "recall": 0, "ndcg": 0.0}
+{"user_id": 764, "method": "MF", "recall": 0, "ndcg": 0.0}
+{"user_id": 764, "method": "Baseline", "recall": 1, "ndcg": 0.31546487678572877}
+{"user_id": 764, "method": "ChatGPT-Direct", "recall": 0, "ndcg": 0.0}
+{"user_id": 764, "method": "Ours (NMF)", "recall": 0, "ndcg": 0.0}
+{"user_id": 764, "method": "Ours+History (NMF)", "recall": 0, "ndcg": 0.0}
+{"user_id": 764, "method": "Ours (FA)", "recall": 0, "ndcg": 0.0}
+{"user_id": 764, "method": "Ours+History (FA)", "recall": 0, "ndcg": 0.0}
+{"user_id": 1600, "method": "UserKNN", "recall": 1, "ndcg": 0.5}
+{"user_id": 1600, "method": "MF", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 1600, "method": "Baseline", "recall": 0, "ndcg": 0.0}
+{"user_id": 1600, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 1600, "method": "Ours (NMF)", "recall": 0, "ndcg": 0.0}
+{"user_id": 1600, "method": "Ours+History (NMF)", "recall": 0, "ndcg": 0.0}
+{"user_id": 1600, "method": "Ours (FA)", "recall": 0, "ndcg": 0.0}
+{"user_id": 1600, "method": "Ours+History (FA)", "recall": 0, "ndcg": 0.0}
+{"user_id": 5262, "method": "UserKNN", "recall": 0, "ndcg": 0.0}
+{"user_id": 5262, "method": "MF", "recall": 1, "ndcg": 0.3010299956639812}
+{"user_id": 5262, "method": "Baseline", "recall": 0, "ndcg": 0.0}
+{"user_id": 5262, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 5262, "method": "Ours (NMF)", "recall": 0, "ndcg": 0.0}
+{"user_id": 5262, "method": "Ours+History (NMF)", "recall": 0, "ndcg": 0.0}
+{"user_id": 5262, "method": "Ours (FA)", "recall": 0, "ndcg": 0.0}
+{"user_id": 5262, "method": "Ours+History (FA)", "recall": 0, "ndcg": 0.0}
+{"user_id": 1884, "method": "UserKNN", "recall": 1, "ndcg": 0.43067655807339306}
+{"user_id": 1884, "method": "MF", "recall": 1, "ndcg": 0.5}
+{"user_id": 1884, "method": "Baseline", "recall": 1, "ndcg": 0.5}
+{"user_id": 1884, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 0.3010299956639812}
+{"user_id": 1884, "method": "Ours (NMF)", "recall": 1, "ndcg": 0.5}
+{"user_id": 1884, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 0.5}
+{"user_id": 1884, "method": "Ours (FA)", "recall": 1, "ndcg": 1.0}
+{"user_id": 1884, "method": "Ours+History (FA)", "recall": 1, "ndcg": 1.0}
+{"user_id": 2289, "method": "UserKNN", "recall": 1, "ndcg": 1.0}
+{"user_id": 2289, "method": "MF", "recall": 1, "ndcg": 1.0}
+{"user_id": 2289, "method": "Baseline", "recall": 0, "ndcg": 0.0}
+{"user_id": 2289, "method": "ChatGPT-Direct", "recall": 0, "ndcg": 0.0}
+{"user_id": 2289, "method": "Ours (NMF)", "recall": 1, "ndcg": 0.3333333333333333}
+{"user_id": 2289, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 0.43067655807339306}
+{"user_id": 2289, "method": "Ours (FA)", "recall": 0, "ndcg": 0.0}
+{"user_id": 2289, "method": "Ours+History (FA)", "recall": 0, "ndcg": 0.0}
+{"user_id": 5026, "method": "UserKNN", "recall": 0, "ndcg": 0.0}
+{"user_id": 5026, "method": "MF", "recall": 1, "ndcg": 0.5}
+{"user_id": 5026, "method": "Baseline", "recall": 1, "ndcg": 0.2890648263178879}
+{"user_id": 5026, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 0.38685280723454163}
+{"user_id": 5026, "method": "Ours (NMF)", "recall": 1, "ndcg": 0.31546487678572877}
+{"user_id": 5026, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 0.3333333333333333}
+{"user_id": 5026, "method": "Ours (FA)", "recall": 0, "ndcg": 0.0}
+{"user_id": 5026, "method": "Ours+History (FA)", "recall": 0, "ndcg": 0.0}
+{"user_id": 4733, "method": "UserKNN", "recall": 1, "ndcg": 1.0}
+{"user_id": 4733, "method": "MF", "recall": 1, "ndcg": 0.5}
+{"user_id": 4733, "method": "Baseline", "recall": 1, "ndcg": 0.3562071871080222}
+{"user_id": 4733, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 0.2890648263178879}
+{"user_id": 4733, "method": "Ours (NMF)", "recall": 1, "ndcg": 1.0}
+{"user_id": 4733, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 1.0}
+{"user_id": 4733, "method": "Ours (FA)", "recall": 1, "ndcg": 1.0}
+{"user_id": 4733, "method": "Ours+History (FA)", "recall": 1, "ndcg": 1.0}
+{"user_id": 2192, "method": "UserKNN", "recall": 1, "ndcg": 0.31546487678572877}
+{"user_id": 2192, "method": "MF", "recall": 0, "ndcg": 0.0}
+{"user_id": 2192, "method": "Baseline", "recall": 0, "ndcg": 0.0}
+{"user_id": 2192, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 1.0}
+{"user_id": 2192, "method": "Ours (NMF)", "recall": 1, "ndcg": 0.38685280723454163}
+{"user_id": 2192, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 0.43067655807339306}
+{"user_id": 2192, "method": "Ours (FA)", "recall": 1, "ndcg": 0.43067655807339306}
+{"user_id": 2192, "method": "Ours+History (FA)", "recall": 1, "ndcg": 0.43067655807339306}
+{"user_id": 5624, "method": "UserKNN", "recall": 1, "ndcg": 0.43067655807339306}
+{"user_id": 5624, "method": "MF", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 5624, "method": "Baseline", "recall": 1, "ndcg": 1.0}
+{"user_id": 5624, "method": "ChatGPT-Direct", "recall": 0, "ndcg": 0.0}
+{"user_id": 5624, "method": "Ours (NMF)", "recall": 1, "ndcg": 1.0}
+{"user_id": 5624, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 1.0}
+{"user_id": 5624, "method": "Ours (FA)", "recall": 0, "ndcg": 0.0}
+{"user_id": 5624, "method": "Ours+History (FA)", "recall": 1, "ndcg": 0.3010299956639812}
+{"user_id": 2300, "method": "UserKNN", "recall": 1, "ndcg": 0.5}
+{"user_id": 2300, "method": "MF", "recall": 1, "ndcg": 1.0}
+{"user_id": 2300, "method": "Baseline", "recall": 1, "ndcg": 0.3562071871080222}
+{"user_id": 2300, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 2300, "method": "Ours (NMF)", "recall": 1, "ndcg": 0.43067655807339306}
+{"user_id": 2300, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 2300, "method": "Ours (FA)", "recall": 1, "ndcg": 0.38685280723454163}
+{"user_id": 2300, "method": "Ours+History (FA)", "recall": 1, "ndcg": 0.5}
+{"user_id": 168, "method": "UserKNN", "recall": 1, "ndcg": 0.3562071871080222}
+{"user_id": 168, "method": "MF", "recall": 0, "ndcg": 0.0}
+{"user_id": 168, "method": "Baseline", "recall": 1, "ndcg": 1.0}
+{"user_id": 168, "method": "ChatGPT-Direct", "recall": 0, "ndcg": 0.0}
+{"user_id": 168, "method": "Ours (NMF)", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 168, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 0.5}
+{"user_id": 168, "method": "Ours (FA)", "recall": 1, "ndcg": 0.38685280723454163}
+{"user_id": 168, "method": "Ours+History (FA)", "recall": 1, "ndcg": 0.38685280723454163}
+{"user_id": 3251, "method": "UserKNN", "recall": 1, "ndcg": 0.5}
+{"user_id": 3251, "method": "MF", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 3251, "method": "Baseline", "recall": 1, "ndcg": 0.3333333333333333}
+{"user_id": 3251, "method": "ChatGPT-Direct", "recall": 0, "ndcg": 0.0}
+{"user_id": 3251, "method": "Ours (NMF)", "recall": 1, "ndcg": 0.3010299956639812}
+{"user_id": 3251, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 0.3333333333333333}
+{"user_id": 3251, "method": "Ours (FA)", "recall": 1, "ndcg": 0.38685280723454163}
+{"user_id": 3251, "method": "Ours+History (FA)", "recall": 0, "ndcg": 0.0}
+{"user_id": 5252, "method": "UserKNN", "recall": 1, "ndcg": 0.3010299956639812}
+{"user_id": 5252, "method": "MF", "recall": 1, "ndcg": 0.31546487678572877}
+{"user_id": 5252, "method": "Baseline", "recall": 1, "ndcg": 0.38685280723454163}
+{"user_id": 5252, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 5252, "method": "Ours (NMF)", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 5252, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 5252, "method": "Ours (FA)", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 5252, "method": "Ours+History (FA)", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 3451, "method": "UserKNN", "recall": 1, "ndcg": 0.3562071871080222}
+{"user_id": 3451, "method": "MF", "recall": 1, "ndcg": 0.31546487678572877}
+{"user_id": 3451, "method": "Baseline", "recall": 1, "ndcg": 0.3010299956639812}
+{"user_id": 3451, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 0.43067655807339306}
+{"user_id": 3451, "method": "Ours (NMF)", "recall": 1, "ndcg": 0.38685280723454163}
+{"user_id": 3451, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 0.43067655807339306}
+{"user_id": 3451, "method": "Ours (FA)", "recall": 1, "ndcg": 0.3333333333333333}
+{"user_id": 3451, "method": "Ours+History (FA)", "recall": 1, "ndcg": 0.3010299956639812}
+{"user_id": 4662, "method": "UserKNN", "recall": 1, "ndcg": 1.0}
+{"user_id": 4662, "method": "MF", "recall": 1, "ndcg": 1.0}
+{"user_id": 4662, "method": "Baseline", "recall": 1, "ndcg": 1.0}
+{"user_id": 4662, "method": "ChatGPT-Direct", "recall": 0, "ndcg": 0.0}
+{"user_id": 4662, "method": "Ours (NMF)", "recall": 1, "ndcg": 0.3562071871080222}
+{"user_id": 4662, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 0.3562071871080222}
+{"user_id": 4662, "method": "Ours (FA)", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 4662, "method": "Ours+History (FA)", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 229, "method": "UserKNN", "recall": 0, "ndcg": 0.0}
+{"user_id": 229, "method": "MF", "recall": 1, "ndcg": 0.3010299956639812}
+{"user_id": 229, "method": "Baseline", "recall": 1, "ndcg": 0.2890648263178879}
+{"user_id": 229, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 0.38685280723454163}
+{"user_id": 229, "method": "Ours (NMF)", "recall": 0, "ndcg": 0.0}
+{"user_id": 229, "method": "Ours+History (NMF)", "recall": 0, "ndcg": 0.0}
+{"user_id": 229, "method": "Ours (FA)", "recall": 1, "ndcg": 0.3010299956639812}
+{"user_id": 229, "method": "Ours+History (FA)", "recall": 1, "ndcg": 0.31546487678572877}
+{"user_id": 3168, "method": "UserKNN", "recall": 1, "ndcg": 0.3333333333333333}
+{"user_id": 3168, "method": "MF", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 3168, "method": "Baseline", "recall": 0, "ndcg": 0.0}
+{"user_id": 3168, "method": "ChatGPT-Direct", "recall": 0, "ndcg": 0.0}
+{"user_id": 3168, "method": "Ours (NMF)", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 3168, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 3168, "method": "Ours (FA)", "recall": 1, "ndcg": 0.31546487678572877}
+{"user_id": 3168, "method": "Ours+History (FA)", "recall": 1, "ndcg": 0.38685280723454163}
+{"user_id": 531, "method": "UserKNN", "recall": 0, "ndcg": 0.0}
+{"user_id": 531, "method": "MF", "recall": 1, "ndcg": 0.5}
+{"user_id": 531, "method": "Baseline", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 531, "method": "ChatGPT-Direct", "recall": 0, "ndcg": 0.0}
+{"user_id": 531, "method": "Ours (NMF)", "recall": 0, "ndcg": 0.0}
+{"user_id": 531, "method": "Ours+History (NMF)", "recall": 0, "ndcg": 0.0}
+{"user_id": 531, "method": "Ours (FA)", "recall": 0, "ndcg": 0.0}
+{"user_id": 531, "method": "Ours+History (FA)", "recall": 0, "ndcg": 0.0}
+{"user_id": 2378, "method": "UserKNN", "recall": 0, "ndcg": 0.0}
+{"user_id": 2378, "method": "MF", "recall": 1, "ndcg": 0.5}
+{"user_id": 2378, "method": "Baseline", "recall": 1, "ndcg": 0.2890648263178879}
+{"user_id": 2378, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 0.3562071871080222}
+{"user_id": 2378, "method": "Ours (NMF)", "recall": 1, "ndcg": 0.3333333333333333}
+{"user_id": 2378, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 0.38685280723454163}
+{"user_id": 2378, "method": "Ours (FA)", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 2378, "method": "Ours+History (FA)", "recall": 1, "ndcg": 1.0}
+{"user_id": 1372, "method": "UserKNN", "recall": 1, "ndcg": 0.31546487678572877}
+{"user_id": 1372, "method": "MF", "recall": 0, "ndcg": 0.0}
+{"user_id": 1372, "method": "Baseline", "recall": 0, "ndcg": 0.0}
+{"user_id": 1372, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 1372, "method": "Ours (NMF)", "recall": 0, "ndcg": 0.0}
+{"user_id": 1372, "method": "Ours+History (NMF)", "recall": 0, "ndcg": 0.0}
+{"user_id": 1372, "method": "Ours (FA)", "recall": 1, "ndcg": 0.2890648263178879}
+{"user_id": 1372, "method": "Ours+History (FA)", "recall": 1, "ndcg": 0.2890648263178879}
+{"user_id": 4869, "method": "UserKNN", "recall": 1, "ndcg": 0.38685280723454163}
+{"user_id": 4869, "method": "MF", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 4869, "method": "Baseline", "recall": 0, "ndcg": 0.0}
+{"user_id": 4869, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 0.5}
+{"user_id": 4869, "method": "Ours (NMF)", "recall": 1, "ndcg": 0.31546487678572877}
+{"user_id": 4869, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 0.31546487678572877}
+{"user_id": 4869, "method": "Ours (FA)", "recall": 1, "ndcg": 0.38685280723454163}
+{"user_id": 4869, "method": "Ours+History (FA)", "recall": 1, "ndcg": 0.38685280723454163}
+{"user_id": 85, "method": "UserKNN", "recall": 1, "ndcg": 0.3562071871080222}
+{"user_id": 85, "method": "MF", "recall": 1, "ndcg": 0.3010299956639812}
+{"user_id": 85, "method": "Baseline", "recall": 0, "ndcg": 0.0}
+{"user_id": 85, "method": "ChatGPT-Direct", "recall": 0, "ndcg": 0.0}
+{"user_id": 85, "method": "Ours (NMF)", "recall": 0, "ndcg": 0.0}
+{"user_id": 85, "method": "Ours+History (NMF)", "recall": 0, "ndcg": 0.0}
+{"user_id": 85, "method": "Ours (FA)", "recall": 1, "ndcg": 0.5}
+{"user_id": 85, "method": "Ours+History (FA)", "recall": 0, "ndcg": 0.0}
+{"user_id": 3927, "method": "UserKNN", "recall": 1, "ndcg": 0.43067655807339306}
+{"user_id": 3927, "method": "MF", "recall": 0, "ndcg": 0.0}
+{"user_id": 3927, "method": "Baseline", "recall": 0, "ndcg": 0.0}
+{"user_id": 3927, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 1.0}
+{"user_id": 3927, "method": "Ours (NMF)", "recall": 1, "ndcg": 1.0}
+{"user_id": 3927, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 1.0}
+{"user_id": 3927, "method": "Ours (FA)", "recall": 1, "ndcg": 1.0}
+{"user_id": 3927, "method": "Ours+History (FA)", "recall": 1, "ndcg": 1.0}
+{"user_id": 1023, "method": "UserKNN", "recall": 1, "ndcg": 0.3333333333333333}
+{"user_id": 1023, "method": "MF", "recall": 1, "ndcg": 1.0}
+{"user_id": 1023, "method": "Baseline", "recall": 0, "ndcg": 0.0}
+{"user_id": 1023, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 1023, "method": "Ours (NMF)", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 1023, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 1023, "method": "Ours (FA)", "recall": 0, "ndcg": 0.0}
+{"user_id": 1023, "method": "Ours+History (FA)", "recall": 0, "ndcg": 0.0}
+{"user_id": 677, "method": "UserKNN", "recall": 1, "ndcg": 0.5}
+{"user_id": 677, "method": "MF", "recall": 1, "ndcg": 0.3562071871080222}
+{"user_id": 677, "method": "Baseline", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 677, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 0.3010299956639812}
+{"user_id": 677, "method": "Ours (NMF)", "recall": 0, "ndcg": 0.0}
+{"user_id": 677, "method": "Ours+History (NMF)", "recall": 0, "ndcg": 0.0}
+{"user_id": 677, "method": "Ours (FA)", "recall": 0, "ndcg": 0.0}
+{"user_id": 677, "method": "Ours+History (FA)", "recall": 0, "ndcg": 0.0}
+{"user_id": 4819, "method": "UserKNN", "recall": 0, "ndcg": 0.0}
+{"user_id": 4819, "method": "MF", "recall": 0, "ndcg": 0.0}
+{"user_id": 4819, "method": "Baseline", "recall": 1, "ndcg": 0.2890648263178879}
+{"user_id": 4819, "method": "ChatGPT-Direct", "recall": 0, "ndcg": 0.0}
+{"user_id": 4819, "method": "Ours (NMF)", "recall": 0, "ndcg": 0.0}
+{"user_id": 4819, "method": "Ours+History (NMF)", "recall": 0, "ndcg": 0.0}
+{"user_id": 4819, "method": "Ours (FA)", "recall": 0, "ndcg": 0.0}
+{"user_id": 4819, "method": "Ours+History (FA)", "recall": 0, "ndcg": 0.0}
+{"user_id": 5904, "method": "UserKNN", "recall": 1, "ndcg": 0.2890648263178879}
+{"user_id": 5904, "method": "MF", "recall": 0, "ndcg": 0.0}
+{"user_id": 5904, "method": "Baseline", "recall": 0, "ndcg": 0.0}
+{"user_id": 5904, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 5904, "method": "Ours (NMF)", "recall": 1, "ndcg": 0.3010299956639812}
+{"user_id": 5904, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 0.3562071871080222}
+{"user_id": 5904, "method": "Ours (FA)", "recall": 1, "ndcg": 0.43067655807339306}
+{"user_id": 5904, "method": "Ours+History (FA)", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 5820, "method": "UserKNN", "recall": 1, "ndcg": 0.38685280723454163}
+{"user_id": 5820, "method": "MF", "recall": 1, "ndcg": 0.5}
+{"user_id": 5820, "method": "Baseline", "recall": 1, "ndcg": 0.5}
+{"user_id": 5820, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 5820, "method": "Ours (NMF)", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 5820, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 1.0}
+{"user_id": 5820, "method": "Ours (FA)", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 5820, "method": "Ours+History (FA)", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 1449, "method": "UserKNN", "recall": 1, "ndcg": 1.0}
+{"user_id": 1449, "method": "MF", "recall": 1, "ndcg": 1.0}
+{"user_id": 1449, "method": "Baseline", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 1449, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 0.3333333333333333}
+{"user_id": 1449, "method": "Ours (NMF)", "recall": 1, "ndcg": 0.43067655807339306}
+{"user_id": 1449, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 0.38685280723454163}
+{"user_id": 1449, "method": "Ours (FA)", "recall": 1, "ndcg": 0.5}
+{"user_id": 1449, "method": "Ours+History (FA)", "recall": 1, "ndcg": 0.5}
+{"user_id": 1658, "method": "UserKNN", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 1658, "method": "MF", "recall": 1, "ndcg": 0.5}
+{"user_id": 1658, "method": "Baseline", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 1658, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 0.2890648263178879}
+{"user_id": 1658, "method": "Ours (NMF)", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 1658, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 1.0}
+{"user_id": 1658, "method": "Ours (FA)", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 1658, "method": "Ours+History (FA)", "recall": 1, "ndcg": 1.0}
+{"user_id": 1670, "method": "UserKNN", "recall": 1, "ndcg": 0.3010299956639812}
+{"user_id": 1670, "method": "MF", "recall": 1, "ndcg": 0.3333333333333333}
+{"user_id": 1670, "method": "Baseline", "recall": 1, "ndcg": 1.0}
+{"user_id": 1670, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 1.0}
+{"user_id": 1670, "method": "Ours (NMF)", "recall": 1, "ndcg": 0.2890648263178879}
+{"user_id": 1670, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 0.2890648263178879}
+{"user_id": 1670, "method": "Ours (FA)", "recall": 0, "ndcg": 0.0}
+{"user_id": 1670, "method": "Ours+History (FA)", "recall": 1, "ndcg": 0.3010299956639812}
+{"user_id": 1696, "method": "UserKNN", "recall": 1, "ndcg": 0.3010299956639812}
+{"user_id": 1696, "method": "MF", "recall": 1, "ndcg": 0.3010299956639812}
+{"user_id": 1696, "method": "Baseline", "recall": 1, "ndcg": 0.3010299956639812}
+{"user_id": 1696, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 0.38685280723454163}
+{"user_id": 1696, "method": "Ours (NMF)", "recall": 1, "ndcg": 0.31546487678572877}
+{"user_id": 1696, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 0.3333333333333333}
+{"user_id": 1696, "method": "Ours (FA)", "recall": 0, "ndcg": 0.0}
+{"user_id": 1696, "method": "Ours+History (FA)", "recall": 0, "ndcg": 0.0}
+{"user_id": 5206, "method": "UserKNN", "recall": 1, "ndcg": 0.38685280723454163}
+{"user_id": 5206, "method": "MF", "recall": 1, "ndcg": 0.31546487678572877}
+{"user_id": 5206, "method": "Baseline", "recall": 0, "ndcg": 0.0}
+{"user_id": 5206, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 0.31546487678572877}
+{"user_id": 5206, "method": "Ours (NMF)", "recall": 1, "ndcg": 1.0}
+{"user_id": 5206, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 1.0}
+{"user_id": 5206, "method": "Ours (FA)", "recall": 1, "ndcg": 1.0}
+{"user_id": 5206, "method": "Ours+History (FA)", "recall": 1, "ndcg": 1.0}
+{"user_id": 4328, "method": "UserKNN", "recall": 1, "ndcg": 0.3562071871080222}
+{"user_id": 4328, "method": "MF", "recall": 1, "ndcg": 0.31546487678572877}
+{"user_id": 4328, "method": "Baseline", "recall": 1, "ndcg": 0.2890648263178879}
+{"user_id": 4328, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 0.3562071871080222}
+{"user_id": 4328, "method": "Ours (NMF)", "recall": 1, "ndcg": 1.0}
+{"user_id": 4328, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 1.0}
+{"user_id": 4328, "method": "Ours (FA)", "recall": 1, "ndcg": 0.43067655807339306}
+{"user_id": 4328, "method": "Ours+History (FA)", "recall": 1, "ndcg": 0.38685280723454163}
+{"user_id": 1617, "method": "UserKNN", "recall": 0, "ndcg": 0.0}
+{"user_id": 1617, "method": "MF", "recall": 0, "ndcg": 0.0}
+{"user_id": 1617, "method": "Baseline", "recall": 1, "ndcg": 0.5}
+{"user_id": 1617, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 1617, "method": "Ours (NMF)", "recall": 1, "ndcg": 0.3010299956639812}
+{"user_id": 1617, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 0.2890648263178879}
+{"user_id": 1617, "method": "Ours (FA)", "recall": 1, "ndcg": 0.3010299956639812}
+{"user_id": 1617, "method": "Ours+History (FA)", "recall": 1, "ndcg": 0.3010299956639812}
+{"user_id": 1098, "method": "UserKNN", "recall": 1, "ndcg": 0.43067655807339306}
+{"user_id": 1098, "method": "MF", "recall": 1, "ndcg": 1.0}
+{"user_id": 1098, "method": "Baseline", "recall": 1, "ndcg": 0.3333333333333333}
+{"user_id": 1098, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 1.0}
+{"user_id": 1098, "method": "Ours (NMF)", "recall": 1, "ndcg": 0.43067655807339306}
+{"user_id": 1098, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 0.43067655807339306}
+{"user_id": 1098, "method": "Ours (FA)", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 1098, "method": "Ours+History (FA)", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 3516, "method": "UserKNN", "recall": 1, "ndcg": 1.0}
+{"user_id": 3516, "method": "MF", "recall": 1, "ndcg": 1.0}
+{"user_id": 3516, "method": "Baseline", "recall": 1, "ndcg": 0.43067655807339306}
+{"user_id": 3516, "method": "ChatGPT-Direct", "recall": 1, "ndcg": 0.5}
+{"user_id": 3516, "method": "Ours (NMF)", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 3516, "method": "Ours+History (NMF)", "recall": 1, "ndcg": 1.0}
+{"user_id": 3516, "method": "Ours (FA)", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 3516, "method": "Ours+History (FA)", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 711, "method": "Baseline+History", "recall": 0, "ndcg": 0.0}
+{"user_id": 4924, "method": "Baseline+History", "recall": 0, "ndcg": 0.0}
+{"user_id": 3128, "method": "Baseline+History", "recall": 1, "ndcg": 0.43067655807339306}
+{"user_id": 1273, "method": "Baseline+History", "recall": 0, "ndcg": 0.0}
+{"user_id": 2095, "method": "Baseline+History", "recall": 1, "ndcg": 0.31546487678572877}
+{"user_id": 2154, "method": "Baseline+History", "recall": 1, "ndcg": 1.0}
+{"user_id": 5530, "method": "Baseline+History", "recall": 1, "ndcg": 0.3333333333333333}
+{"user_id": 2317, "method": "Baseline+History", "recall": 1, "ndcg": 0.3010299956639812}
+{"user_id": 743, "method": "Baseline+History", "recall": 1, "ndcg": 0.38685280723454163}
+{"user_id": 3695, "method": "Baseline+History", "recall": 0, "ndcg": 0.0}
+{"user_id": 2054, "method": "Baseline+History", "recall": 1, "ndcg": 0.31546487678572877}
+{"user_id": 5286, "method": "Baseline+History", "recall": 0, "ndcg": 0.0}
+{"user_id": 5594, "method": "Baseline+History", "recall": 0, "ndcg": 0.0}
+{"user_id": 1143, "method": "Baseline+History", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 3950, "method": "Baseline+History", "recall": 1, "ndcg": 0.43067655807339306}
+{"user_id": 409, "method": "Baseline+History", "recall": 1, "ndcg": 0.5}
+{"user_id": 5759, "method": "Baseline+History", "recall": 1, "ndcg": 0.2890648263178879}
+{"user_id": 297, "method": "Baseline+History", "recall": 1, "ndcg": 0.3562071871080222}
+{"user_id": 866, "method": "Baseline+History", "recall": 1, "ndcg": 0.38685280723454163}
+{"user_id": 806, "method": "Baseline+History", "recall": 0, "ndcg": 0.0}
+{"user_id": 4818, "method": "Baseline+History", "recall": 1, "ndcg": 1.0}
+{"user_id": 24, "method": "Baseline+History", "recall": 0, "ndcg": 0.0}
+{"user_id": 1422, "method": "Baseline+History", "recall": 1, "ndcg": 0.3010299956639812}
+{"user_id": 656, "method": "Baseline+History", "recall": 1, "ndcg": 0.3333333333333333}
+{"user_id": 2437, "method": "Baseline+History", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 2516, "method": "Baseline+History", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 5671, "method": "Baseline+History", "recall": 1, "ndcg": 0.3562071871080222}
+{"user_id": 5655, "method": "Baseline+History", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 5256, "method": "Baseline+History", "recall": 1, "ndcg": 1.0}
+{"user_id": 2518, "method": "Baseline+History", "recall": 0, "ndcg": 0.0}
+{"user_id": 4161, "method": "Baseline+History", "recall": 0, "ndcg": 0.0}
+{"user_id": 5635, "method": "Baseline+History", "recall": 0, "ndcg": 0.0}
+{"user_id": 2858, "method": "Baseline+History", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 1631, "method": "Baseline+History", "recall": 1, "ndcg": 0.43067655807339306}
+{"user_id": 3586, "method": "Baseline+History", "recall": 0, "ndcg": 0.0}
+{"user_id": 5386, "method": "Baseline+History", "recall": 0, "ndcg": 0.0}
+{"user_id": 4490, "method": "Baseline+History", "recall": 0, "ndcg": 0.0}
+{"user_id": 2967, "method": "Baseline+History", "recall": 1, "ndcg": 0.6309297535714575}
+{"user_id": 4743, "method": "Baseline+History", "recall": 0, "ndcg": 0.0}
+{"user_id": 1194, "method": "Baseline+History", "recall": 1, "ndcg": 0.38685280723454163}
+{"user_id": 255, "method": "Baseline+History", "recall": 1, "ndcg": 0.43067655807339306}
+{"user_id": 222, "method": "Baseline+History", "recall": 1, "ndcg": 1.0}
+{"user_id": 1742, "method": "Baseline+History", "recall": 1, "ndcg": 0.2890648263178879}
+{"user_id": 4249, "method": "Baseline+History", "recall": 0, "ndcg": 0.0}
+{"user_id": 2550, "method": "Baseline+History", "recall": 1, "ndcg": 0.38685280723454163}
+{"user_id": 1401, "method": "Baseline+History", "recall": 1, "ndcg": 0.3562071871080222}
+{"user_id": 4221, "method": "Baseline+History", "recall": 0, "ndcg": 0.0}
+{"user_id": 1162, "method": "Baseline+History", "recall": 1, "ndcg": 0.5}
+{"user_id": 4796, "method": "Baseline+History", "recall": 1, "ndcg": 0.43067655807339306}
+{"user_id": 5673, "method": "Baseline+History", "recall": 1, "ndcg": 0.2890648263178879}
+{"user_id": 4352, "method": "Baseline+History", "recall": 0, "ndcg": 0.0}
+{"user_id": 882, "method": "Baseline+History", "recall": 1, "ndcg": 1.0}
+{"user_id": 3694, "method": "Baseline+History", "recall": 1, "ndcg": 0.3010299956639812}
+{"user_id": 5591, "method": "Baseline+History", "recall": 1, "ndcg": 0.43067655807339306}
+{"user_id": 2500, "method": "Baseline+History", "recall": 1, "ndcg": 1.0}
+{"user_id": 1877, "method": "Baseline+History", "recall": 1, "ndcg": 0.38685280723454163}
+{"user_id": 566, "method": "Baseline+History", "recall": 0, "ndcg": 0.0}
+{"user_id": 80, "method": "Baseline+History", "recall": 1, "ndcg": 1.0}
+{"user_id": 2338, "method": "Baseline+History", "recall": 1, "ndcg": 0.3010299956639812}
+{"user_id": 2804, "method": "Baseline+History", "recall": 1, "ndcg": 0.31546487678572877}
+{"user_id": 1600, "method": "Baseline+History", "recall": 0, "ndcg": 0.0}
+{"user_id": 756, "method": "Baseline+History", "recall": 0, "ndcg": 0.0}
+{"user_id": 5262, "method": "Baseline+History", "recall": 1, "ndcg": 0.2890648263178879}
+{"user_id": 764, "method": "Baseline+History", "recall": 1, "ndcg": 0.31546487678572877}
+{"user_id": 5026, "method": "Baseline+History", "recall": 1, "ndcg": 0.2890648263178879}
+{"user_id": 4733, "method": "Baseline+History", "recall": 1, "ndcg": 0.3562071871080222}
+{"user_id": 1884, "method": "Baseline+History", "recall": 1, "ndcg": 0.5}
+{"user_id": 2192, "method": "Baseline+History", "recall": 0, "ndcg": 0.0}
+{"user_id": 2289, "method": "Baseline+History", "recall": 0, "ndcg": 0.0}
+{"user_id": 5624, "method": "Baseline+History", "recall": 1, "ndcg": 1.0}
+{"user_id": 3251, "method": "Baseline+History", "recall": 1, "ndcg": 0.38685280723454163}
+{"user_id": 2300, "method": "Baseline+History", "recall": 1, "ndcg": 0.5}
+{"user_id": 168, "method": "Baseline+History", "recall": 1, "ndcg": 0.43067655807339306}
+{"user_id": 4662, "method": "Baseline+History", "recall": 1, "ndcg": 1.0}
+{"user_id": 3451, "method": "Baseline+History", "recall": 1, "ndcg": 0.3333333333333333}
+{"user_id": 5252, "method": "Baseline+History", "recall": 1, "ndcg": 0.38685280723454163}
+{"user_id": 3168, "method": "Baseline+History", "recall": 0, "ndcg": 0.0}
+{"user_id": 531, "method": "Baseline+History", "recall": 1, "ndcg": 1.0}
+{"user_id": 2378, "method": "Baseline+History", "recall": 1, "ndcg": 0.3333333333333333}
+{"user_id": 229, "method": "Baseline+History", "recall": 1, "ndcg": 0.31546487678572877}
+{"user_id": 4869, "method": "Baseline+History", "recall": 0, "ndcg": 0.0}
+{"user_id": 3927, "method": "Baseline+History", "recall": 1, "ndcg": 0.3010299956639812}
+{"user_id": 1372, "method": "Baseline+History", "recall": 0, "ndcg": 0.0}
+{"user_id": 85, "method": "Baseline+History", "recall": 0, "ndcg": 0.0}
+{"user_id": 1023, "method": "Baseline+History", "recall": 1, "ndcg": 0.2890648263178879}
+{"user_id": 5820, "method": "Baseline+History", "recall": 1, "ndcg": 0.5}
+{"user_id": 5904, "method": "Baseline+History", "recall": 1, "ndcg": 0.3333333333333333}
+{"user_id": 1449, "method": "Baseline+History", "recall": 1, "ndcg": 1.0}
+{"user_id": 677, "method": "Baseline+History", "recall": 1, "ndcg": 0.5}
+{"user_id": 1658, "method": "Baseline+History", "recall": 1, "ndcg": 0.3333333333333333}
+{"user_id": 4819, "method": "Baseline+History", "recall": 0, "ndcg": 0.0}
+{"user_id": 1696, "method": "Baseline+History", "recall": 1, "ndcg": 0.31546487678572877}
+{"user_id": 1617, "method": "Baseline+History", "recall": 1, "ndcg": 0.31546487678572877}
+{"user_id": 1670, "method": "Baseline+History", "recall": 1, "ndcg": 1.0}
+{"user_id": 4328, "method": "Baseline+History", "recall": 0, "ndcg": 0.0}
+{"user_id": 5206, "method": "Baseline+History", "recall": 1, "ndcg": 0.3010299956639812}
+{"user_id": 1098, "method": "Baseline+History", "recall": 0, "ndcg": 0.0}
+{"user_id": 3516, "method": "Baseline+History", "recall": 1, "ndcg": 0.5}

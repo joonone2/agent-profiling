@@ -22,8 +22,12 @@ HISTORY_N = 20                      # ChatGPT-Direct / Ours+History에 제공할
 POSITIVE_RATING_THRESHOLD = 4.0     # 후보셋 정답 판정 기준
 FACTOR_METHODS = ["nmf", "fa"]      # NMF/FA 이중 실행: 각 method별로 Ours 변형이 생성됨
 
+# ── 병렬화 / 체크포인트 ───────────────────────────────
+MAX_WORKERS = 8              # 동시 실행할 스레드 수 (OpenRouter rate limit 고려해 처음엔 보수적으로)
+CHECKPOINT_INTERVAL = 10     # 몇 명(건) 처리할 때마다 중간 결과를 디스크에 저장할지
+
 # ── 디버깅용: 이력 프롬프트 검증 시 나머지 방법론/랭킹 트랙 건너뛰기 ──
-# True로 두면 UserKNN/MF/Baseline/ChatGPT-Direct 및 랭킹 트랙 전체를 건너뛰고
+# True로 두면 UserKNN/MF/Baseline/Baseline+History/ChatGPT-Direct 및 랭킹 트랙 전체를 건너뛰고
 # Ours/Ours+History의 레이팅 트랙만 실행한다. 검증이 끝나면 False로 되돌릴 것.
 DEBUG_SKIP_OTHER_METHODS = False
 
@@ -41,6 +45,4 @@ GENRES = [
 ]
 
 # 19번째 피처: popularity_bias
-FEATURE_NAMES = GENRES + ["popularity_bias"]  # 총 19개, 순서 고정
-
-
+FEATURE_NAMES = GENRES + ["popularity_bias"]  # 총 19개, 순서 고정 

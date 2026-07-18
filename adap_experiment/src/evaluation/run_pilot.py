@@ -8,8 +8,8 @@ ADAP Pilot Experiment — 전체 파이프라인 실행 + 결과 집계
 4. 후보셋 생성
 5. 통계 베이스라인 모델 학습 (DEBUG_SKIP_OTHER_METHODS=True면 건너뜀)
 6. FACTOR_METHODS 루프: Factor Discovery → Agent Synthesis → Weight Estimation
-7. 레이팅 예측 트랙 (베이스라인 1회 + Ours method별)
-8. 랭킹 트랙 (DEBUG_SKIP_OTHER_METHODS=True면 전체 건너뜀)
+7. 레이팅 예측 트랙 (베이스라인 1회 + Ours method별) — ThreadPoolExecutor로 병렬화, 체크포인트/재개 지원
+8. 랭킹 트랙 (DEBUG_SKIP_OTHER_METHODS=True면 전체 건너뜀) — 동일하게 병렬화/체크포인트 지원
 9. 지표 계산 + 결과 저장
 """
 import os
@@ -17,6 +17,9 @@ import sys
 import json
 import logging
 import time
+import threading
+from collections import defaultdict
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import numpy as np
 import pandas as pd
@@ -32,6 +35,7 @@ from config import (
     K_FACTORS, N_PILOT_USERS, RANDOM_SEED, HISTORY_N,
     FACTOR_METHODS,
     DEBUG_SKIP_OTHER_METHODS,   # ★ 추가: 디버깅용 스킵 플래그
+    MAX_WORKERS, CHECKPOINT_INTERVAL,  # ★ 추가: 병렬화 / 체크포인트 파라미터
 )
 from src.data_prep.load_movielens import load_ratings, load_movies
 from src.data_prep.temporal_split import temporal_split
@@ -54,10 +58,13 @@ from src.baselines.stat_baseline import UserKNNModel, mf_train, mf_predict, rank
 from src.baselines.llm_direct import (
     baseline_predict_rating,
     baseline_rank,
+    baseline_predict_rating_with_history,
+    baseline_rank_with_history,
     chatgpt_direct_predict_rating,
     chatgpt_direct_rank,
 )
 from src.evaluation.metrics import mae, rmse, recall_at_k, ndcg_at_k
+from src.llm_client import get_rate_limit_error_count
 
 # ── 로깅 설정 ────────────────────────────────────────
 logging.basicConfig(
@@ -66,6 +73,10 @@ logging.basicConfig(
     handlers=[logging.StreamHandler()],
 )
 logger = logging.getLogger(__name__)
+
+# ── 체크포인트 파일 경로 ─────────────────────────────
+CHECKPOINT_RATING_PATH = os.path.join(OUTPUT_DIR, "predictions", "_checkpoint_rating.jsonl")
+CHECKPOINT_RANKING_PATH = os.path.join(OUTPUT_DIR, "predictions", "_checkpoint_ranking.jsonl")
 
 
 def _get_item_info(movie_id: int, movies_df: pd.DataFrame) -> dict:
@@ -94,6 +105,365 @@ def _get_user_history_titles(user_id: int, train_df: pd.DataFrame, movies_df: pd
 
 
 # ══════════════════════════════════════════════════════
+# 체크포인트 유틸리티
+# ══════════════════════════════════════════════════════
+
+def _load_checkpoint(path: str) -> list[dict]:
+    """체크포인트 jsonl 파일을 읽어서 레코드 리스트로 반환. 파일이 없으면 빈 리스트."""
+    records: list[dict] = []
+    if not os.path.exists(path):
+        return records
+    with open(path, "r", encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                records.append(json.loads(line))
+            except json.JSONDecodeError:
+                logger.warning("Checkpoint line could not be parsed, skipping: %s", line[:100])
+    return records
+
+
+class CheckpointWriter:
+    """
+    처리 단위(행/유저)가 완료될 때마다 add()로 결과를 버퍼에 쌓고,
+    CHECKPOINT_INTERVAL 단위마다 디스크에 append + flush + fsync 한다.
+    스레드 세이프.
+    """
+
+    def __init__(self, path: str, interval: int):
+        self.path = path
+        self.interval = interval
+        self._lock = threading.Lock()
+        self._buffer: list[dict] = []
+        self._units_since_flush = 0
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+
+    def add(self, records: list[dict]) -> None:
+        """records: 완료된 처리 단위 1개(행 또는 유저)에서 생성된 체크포인트 레코드들."""
+        with self._lock:
+            self._buffer.extend(records)
+            self._units_since_flush += 1
+            if self._units_since_flush >= self.interval:
+                self._flush_locked()
+
+    def flush(self) -> None:
+        with self._lock:
+            self._flush_locked()
+
+    def _flush_locked(self) -> None:
+        if self._buffer:
+            with open(self.path, "a", encoding="utf-8") as f:
+                for rec in self._buffer:
+                    f.write(json.dumps(rec, ensure_ascii=False) + "\n")
+                f.flush()
+                os.fsync(f.fileno())
+            self._buffer = []
+        self._units_since_flush = 0
+
+
+def _mark_checkpoint_done(path: str) -> None:
+    """파이프라인이 정상 완료되면 체크포인트 파일을 _done.jsonl로 보관(선택 사항)."""
+    if not os.path.exists(path):
+        return
+    done_path = path[:-len(".jsonl")] + "_done.jsonl"
+    try:
+        if os.path.exists(done_path):
+            os.remove(done_path)
+        os.rename(path, done_path)
+    except OSError as e:
+        logger.warning("Could not rename checkpoint file %s -> %s: %s", path, done_path, e)
+
+
+# ══════════════════════════════════════════════════════
+# 에이전트 병렬 호출 헬퍼 (K_FACTORS개를 동시에 호출)
+# ══════════════════════════════════════════════════════
+
+def _judge_factors_single(agent_prompts: dict, factor_ids: list, item_info: dict,
+                           agent_executor: ThreadPoolExecutor) -> dict:
+    futures = {
+        agent_executor.submit(agent_judge_single, agent_prompts[fid], item_info): fid
+        for fid in factor_ids
+    }
+    outputs: dict = {}
+    for fut in as_completed(futures):
+        fid = futures[fut]
+        outputs[fid] = fut.result()
+    return outputs
+
+
+def _judge_factors_batch(agent_prompts: dict, factor_ids: list, candidate_items: list,
+                          agent_executor: ThreadPoolExecutor) -> dict:
+    futures = {
+        agent_executor.submit(agent_judge_batch, agent_prompts[fid], candidate_items): fid
+        for fid in factor_ids
+    }
+    results: dict = {}
+    for fut in as_completed(futures):
+        fid = futures[fut]
+        results[fid] = fut.result()
+    return results
+
+
+# ══════════════════════════════════════════════════════
+# 8a. 레이팅 트랙 — 행 1개 처리 단위
+# ══════════════════════════════════════════════════════
+
+def _process_rating_row(row, *, done_methods: set, train_df: pd.DataFrame, movies_df: pd.DataFrame,
+                         user_feature_matrix: pd.DataFrame, userknn_model, mf_model,
+                         factor_results: dict, agent_executor: ThreadPoolExecutor):
+    """
+    한 (userId, movieId) 테스트 행에 대해 모든 방법론 결과를 계산.
+    done_methods에 이미 있는 method는 재계산하지 않고 건너뜀(재개용).
+    반환: (uid, mid, records) — records: [{"method", "pred", "actual", "failed"}, ...]
+    """
+    uid = int(row["userId"])
+    mid = int(row["movieId"])
+    actual = float(row["rating"])
+    item_info = _get_item_info(mid, movies_df)
+    records: list[dict] = []
+
+    if not DEBUG_SKIP_OTHER_METHODS:
+        # --- UserKNN (1회) ---
+        if "UserKNN" not in done_methods:
+            pred = userknn_model.predict(uid, mid)
+            records.append({"method": "UserKNN", "pred": pred, "actual": actual, "failed": False})
+
+        # --- MF (1회) ---
+        if "MF" not in done_methods:
+            pred = mf_predict(mf_model, uid, mid)
+            records.append({"method": "MF", "pred": pred, "actual": actual, "failed": False})
+
+        # --- Baseline 19dim→LLM (1회) ---
+        if "Baseline" not in done_methods:
+            try:
+                uf = user_feature_matrix.loc[uid] if uid in user_feature_matrix.index else pd.Series(dtype=float)
+                pred = baseline_predict_rating(uf, item_info)
+                records.append({"method": "Baseline", "pred": pred, "actual": actual, "failed": False})
+            except (ValueError, Exception) as e:
+                records.append({"method": "Baseline", "pred": None, "actual": actual, "failed": True})
+                logger.warning("Baseline rating parse failure for user=%d item=%d: %s", uid, mid, e)
+
+        # --- Baseline+History: 19dim 피처 + 최근 시청 이력 → LLM (1회) ---
+        if "Baseline+History" not in done_methods:
+            try:
+                uf = user_feature_matrix.loc[uid] if uid in user_feature_matrix.index else pd.Series(dtype=float)
+                history = _get_user_history(uid, train_df, movies_df)
+                pred = baseline_predict_rating_with_history(uf, history, item_info)
+                records.append({"method": "Baseline+History", "pred": pred, "actual": actual, "failed": False})
+            except (ValueError, Exception) as e:
+                records.append({"method": "Baseline+History", "pred": None, "actual": actual, "failed": True})
+                logger.warning("Baseline+History rating parse failure for user=%d item=%d: %s", uid, mid, e)
+
+        # --- ChatGPT-Direct (1회) ---
+        if "ChatGPT-Direct" not in done_methods:
+            try:
+                history = _get_user_history(uid, train_df, movies_df)
+                pred = chatgpt_direct_predict_rating(history, item_info)
+                records.append({"method": "ChatGPT-Direct", "pred": pred, "actual": actual, "failed": False})
+            except (ValueError, Exception) as e:
+                records.append({"method": "ChatGPT-Direct", "pred": None, "actual": actual, "failed": True})
+                logger.warning("ChatGPT-Direct rating parse failure for user=%d item=%d: %s", uid, mid, e)
+
+    # --- Ours / Ours+History: method별로 각각 실행 (항상 실행됨) ---
+    for method in FACTOR_METHODS:
+        tag = method.upper()
+        fr = factor_results[method]
+        factor_ids = fr["factor_ids"]
+        agent_prompts = fr["agent_prompts"]
+        user_weights_df = fr["user_weights_df"]
+
+        ours_name = f"Ours ({tag})"
+        ours_hist_name = f"Ours+History ({tag})"
+        need_ours = ours_name not in done_methods
+        need_ours_hist = ours_hist_name not in done_methods
+        if not need_ours and not need_ours_hist:
+            continue
+
+        agent_outputs = None
+        uw = {fid: float(user_weights_df.loc[uid, fid]) for fid in factor_ids} \
+            if uid in user_weights_df.index else {fid: 1.0 / len(factor_ids) for fid in factor_ids}
+
+        if need_ours:
+            try:
+                agent_outputs = _judge_factors_single(agent_prompts, factor_ids, item_info, agent_executor)
+                pred = orchestrate_rating(agent_outputs, uw, history=None)
+                records.append({"method": ours_name, "pred": pred, "actual": actual, "failed": False})
+            except Exception as e:
+                records.append({"method": ours_name, "pred": None, "actual": actual, "failed": True})
+                logger.warning("Ours (%s) rating failure for user=%d item=%d: %s", tag, uid, mid, e)
+
+        if need_ours_hist:
+            try:
+                if agent_outputs is None:
+                    agent_outputs = _judge_factors_single(agent_prompts, factor_ids, item_info, agent_executor)
+                hist_titles = _get_user_history_titles(uid, train_df, movies_df)
+                pred = orchestrate_rating(agent_outputs, uw, history=hist_titles)
+                records.append({"method": ours_hist_name, "pred": pred, "actual": actual, "failed": False})
+            except Exception as e:
+                records.append({"method": ours_hist_name, "pred": None, "actual": actual, "failed": True})
+                logger.warning("Ours+History (%s) rating failure for user=%d item=%d: %s", tag, uid, mid, e)
+
+    return uid, mid, records
+
+
+# ══════════════════════════════════════════════════════
+# 8b. 랭킹 트랙 — 유저 1명 처리 단위
+# ══════════════════════════════════════════════════════
+
+def _process_ranking_user(uid: int, *, done_methods: set, candidate_sets: dict, train_df: pd.DataFrame,
+                           movies_df: pd.DataFrame, user_feature_matrix: pd.DataFrame,
+                           userknn_model, mf_model, factor_results: dict,
+                           agent_executor: ThreadPoolExecutor):
+    """
+    한 유저에 대해 모든 방법론의 랭킹 결과(recall@10, ndcg@10)를 계산.
+    반환: (uid, records) — records: [{"method", "recall", "ndcg", "failed"}, ...]
+    """
+    cs = candidate_sets[uid]
+    positive_id = cs["positive"]
+    candidate_ids = cs["candidates"]
+
+    candidate_items = []
+    for cid in candidate_ids:
+        info = _get_item_info(cid, movies_df)
+        candidate_items.append({"item_id": cid, "title": info["title"], "genres": info["genres"]})
+
+    records: list[dict] = []
+
+    # --- UserKNN (1회) ---
+    if "UserKNN" not in done_methods:
+        ranked = rank_by_stat_method(userknn_model.predict, uid, candidate_ids)
+        records.append({
+            "method": "UserKNN",
+            "recall": recall_at_k(ranked, positive_id),
+            "ndcg": ndcg_at_k(ranked, positive_id),
+            "failed": False,
+        })
+
+    # --- MF (1회) ---
+    if "MF" not in done_methods:
+        ranked = rank_by_stat_method(lambda u, i: mf_predict(mf_model, u, i), uid, candidate_ids)
+        records.append({
+            "method": "MF",
+            "recall": recall_at_k(ranked, positive_id),
+            "ndcg": ndcg_at_k(ranked, positive_id),
+            "failed": False,
+        })
+
+    # --- Baseline 19dim→LLM (1회, 배치) ---
+    if "Baseline" not in done_methods:
+        try:
+            uf = user_feature_matrix.loc[uid] if uid in user_feature_matrix.index else pd.Series(dtype=float)
+            ranked = baseline_rank(uf, candidate_items)
+            records.append({
+                "method": "Baseline",
+                "recall": recall_at_k(ranked, positive_id),
+                "ndcg": ndcg_at_k(ranked, positive_id),
+                "failed": False,
+            })
+        except Exception as e:
+            records.append({"method": "Baseline", "recall": None, "ndcg": None, "failed": True})
+            logger.warning("Baseline ranking failure for user=%d: %s", uid, e)
+
+    # --- Baseline+History: 19dim 피처 + 최근 시청 이력 → LLM (1회, 배치) ---
+    if "Baseline+History" not in done_methods:
+        try:
+            uf = user_feature_matrix.loc[uid] if uid in user_feature_matrix.index else pd.Series(dtype=float)
+            history = _get_user_history(uid, train_df, movies_df)
+            ranked = baseline_rank_with_history(uf, history, candidate_items)
+            records.append({
+                "method": "Baseline+History",
+                "recall": recall_at_k(ranked, positive_id),
+                "ndcg": ndcg_at_k(ranked, positive_id),
+                "failed": False,
+            })
+        except Exception as e:
+            records.append({"method": "Baseline+History", "recall": None, "ndcg": None, "failed": True})
+            logger.warning("Baseline+History ranking failure for user=%d: %s", uid, e)
+
+    # --- ChatGPT-Direct (1회, 배치) ---
+    if "ChatGPT-Direct" not in done_methods:
+        try:
+            history = _get_user_history(uid, train_df, movies_df)
+            ranked = chatgpt_direct_rank(history, candidate_items)
+            records.append({
+                "method": "ChatGPT-Direct",
+                "recall": recall_at_k(ranked, positive_id),
+                "ndcg": ndcg_at_k(ranked, positive_id),
+                "failed": False,
+            })
+        except Exception as e:
+            records.append({"method": "ChatGPT-Direct", "recall": None, "ndcg": None, "failed": True})
+            logger.warning("ChatGPT-Direct ranking failure for user=%d: %s", uid, e)
+
+    # --- Ours & Ours+History: method별로 각각 실행 ---
+    for method in FACTOR_METHODS:
+        tag = method.upper()
+        fr = factor_results[method]
+        factor_ids = fr["factor_ids"]
+        agent_prompts = fr["agent_prompts"]
+        user_weights_df = fr["user_weights_df"]
+
+        ours_name = f"Ours ({tag})"
+        ours_hist_name = f"Ours+History ({tag})"
+        need_ours = ours_name not in done_methods
+        need_ours_hist = ours_hist_name not in done_methods
+        if not need_ours and not need_ours_hist:
+            continue
+
+        # 에이전트 배치 판단은 Ours/Ours+History 둘 중 하나만 필요해도 공통으로 필요하므로 항상 계산
+        try:
+            agent_batch_results = _judge_factors_batch(agent_prompts, factor_ids, candidate_items, agent_executor)
+
+            agent_outputs_per_item: dict[int, dict[str, float]] = {cid: {} for cid in candidate_ids}
+            for fid, batch in agent_batch_results.items():
+                for item in batch:
+                    agent_outputs_per_item[item["item_id"]][fid] = item["score"]
+
+            uw = {fid: float(user_weights_df.loc[uid, fid]) for fid in factor_ids} \
+                if uid in user_weights_df.index else {fid: 1.0 / len(factor_ids) for fid in factor_ids}
+        except Exception as e:
+            if need_ours:
+                records.append({"method": ours_name, "recall": None, "ndcg": None, "failed": True})
+            if need_ours_hist:
+                records.append({"method": ours_hist_name, "recall": None, "ndcg": None, "failed": True})
+            logger.warning("Ours/Ours+History (%s) agent judging failure for user=%d: %s", tag, uid, e)
+            continue
+
+        # Ours (no history) — listwise 랭킹 (후보 전체를 한 프롬프트에 넣고 LLM이 한 번에 순위 매김)
+        if need_ours:
+            try:
+                ranked = orchestrate_ranking(agent_outputs_per_item, uw, candidate_items, history=None)
+                records.append({
+                    "method": ours_name,
+                    "recall": recall_at_k(ranked, positive_id),
+                    "ndcg": ndcg_at_k(ranked, positive_id),
+                    "failed": False,
+                })
+            except Exception as e:
+                records.append({"method": ours_name, "recall": None, "ndcg": None, "failed": True})
+                logger.warning("Ours (%s) ranking failure for user=%d: %s", tag, uid, e)
+
+        # Ours+History
+        if need_ours_hist:
+            try:
+                hist_titles = _get_user_history_titles(uid, train_df, movies_df)
+                ranked = orchestrate_ranking(agent_outputs_per_item, uw, candidate_items, history=hist_titles)
+                records.append({
+                    "method": ours_hist_name,
+                    "recall": recall_at_k(ranked, positive_id),
+                    "ndcg": ndcg_at_k(ranked, positive_id),
+                    "failed": False,
+                })
+            except Exception as e:
+                records.append({"method": ours_hist_name, "recall": None, "ndcg": None, "failed": True})
+                logger.warning("Ours+History (%s) ranking failure for user=%d: %s", tag, uid, e)
+
+    return uid, records
+
+
+# ══════════════════════════════════════════════════════
 # 메인 파이프라인
 # ══════════════════════════════════════════════════════
 
@@ -103,7 +473,8 @@ def main():
     logger.info("ADAP Pilot Experiment — Pipeline Start")
     if DEBUG_SKIP_OTHER_METHODS:
         logger.info("★ DEBUG_SKIP_OTHER_METHODS=True — "
-                     "UserKNN/MF/Baseline/ChatGPT-Direct 및 랭킹 트랙 전체를 건너뜁니다.")
+                     "UserKNN/MF/Baseline/Baseline+History/ChatGPT-Direct 및 랭킹 트랙 전체를 건너뜁니다.")
+    logger.info("MAX_WORKERS=%d, CHECKPOINT_INTERVAL=%d", MAX_WORKERS, CHECKPOINT_INTERVAL)
     logger.info("=" * 60)
 
     # ── 1. 데이터 로딩 ────────────────────────────────
@@ -188,6 +559,10 @@ def main():
     preds_dir = os.path.join(OUTPUT_DIR, "predictions")
     os.makedirs(preds_dir, exist_ok=True)
 
+    # 에이전트 판단 + 랭킹 트랙 pointwise 오케스트레이터(LLM) 호출용 공유 풀
+    # (행/유저 단위 풀과는 별도 풀이라 서로 블로킹해도 데드락이 나지 않음)
+    agent_executor = ThreadPoolExecutor(max_workers=MAX_WORKERS)
+
     # ─────────────────────────────────────────────────
     # 8a. 레이팅 예측 트랙
     # ─────────────────────────────────────────────────
@@ -198,11 +573,12 @@ def main():
     logger.info("  Rating track: %d test rows across %d users",
                 len(rating_test_rows), rating_test_rows["userId"].nunique())
 
-    # 베이스라인 4개 (1번만 실행, DEBUG_SKIP_OTHER_METHODS=True면 항상 빈 상태로 유지)
+    # 베이스라인 5개 (1번만 실행, DEBUG_SKIP_OTHER_METHODS=True면 항상 빈 상태로 유지)
     baseline_methods_rating: dict[str, dict] = {
         "UserKNN":          {"preds": [], "actuals": [], "parse_failures": 0},
         "MF":               {"preds": [], "actuals": [], "parse_failures": 0},
         "Baseline":         {"preds": [], "actuals": [], "parse_failures": 0},
+        "Baseline+History": {"preds": [], "actuals": [], "parse_failures": 0},
         "ChatGPT-Direct":   {"preds": [], "actuals": [], "parse_failures": 0},
     }
 
@@ -213,79 +589,79 @@ def main():
         ours_methods_rating[f"Ours ({tag})"] = {"preds": [], "actuals": [], "parse_failures": 0}
         ours_methods_rating[f"Ours+History ({tag})"] = {"preds": [], "actuals": [], "parse_failures": 0}
 
-    for _, row in tqdm(rating_test_rows.iterrows(), total=len(rating_test_rows), desc="Rating Track"):
-        uid = int(row["userId"])
-        mid = int(row["movieId"])
-        actual = float(row["rating"])
-        item_info = _get_item_info(mid, movies_df)
+    methods_rating = {**baseline_methods_rating, **ours_methods_rating}
 
-        # ── UserKNN / MF / Baseline / ChatGPT-Direct: 디버깅 중에는 건너뜀 ──
-        if not DEBUG_SKIP_OTHER_METHODS:
-            # --- UserKNN (1회) ---
-            pred = userknn_model.predict(uid, mid)
-            baseline_methods_rating["UserKNN"]["preds"].append(pred)
-            baseline_methods_rating["UserKNN"]["actuals"].append(actual)
+    # 이번 실행에서 유효한 method 이름 집합 (DEBUG_SKIP_OTHER_METHODS 반영)
+    expected_rating_methods = set()
+    if not DEBUG_SKIP_OTHER_METHODS:
+        expected_rating_methods |= {"UserKNN", "MF", "Baseline", "Baseline+History", "ChatGPT-Direct"}
+    for method in FACTOR_METHODS:
+        tag = method.upper()
+        expected_rating_methods.add(f"Ours ({tag})")
+        expected_rating_methods.add(f"Ours+History ({tag})")
 
-            # --- MF (1회) ---
-            pred = mf_predict(mf_model, uid, mid)
-            baseline_methods_rating["MF"]["preds"].append(pred)
-            baseline_methods_rating["MF"]["actuals"].append(actual)
+    # ── 재개(resume): 체크포인트에서 이미 성공한 결과를 불러와 집계에 반영 ──
+    existing_rating_records = _load_checkpoint(CHECKPOINT_RATING_PATH)
+    done_by_row: dict[tuple, set] = defaultdict(set)
+    for rec in existing_rating_records:
+        key = (rec["user_id"], rec["movie_id"])
+        done_by_row[key].add(rec["method"])
+        if rec["method"] in methods_rating:
+            methods_rating[rec["method"]]["preds"].append(rec["pred"])
+            methods_rating[rec["method"]]["actuals"].append(rec["actual"])
+    if existing_rating_records:
+        logger.info("  Resumed %d existing rating checkpoint records "
+                     "(%d rows already have some results).",
+                     len(existing_rating_records), len(done_by_row))
 
-            # --- Baseline 19dim→LLM (1회) ---
-            try:
-                uf = user_feature_matrix.loc[uid] if uid in user_feature_matrix.index else pd.Series(dtype=float)
-                pred = baseline_predict_rating(uf, item_info)
-                baseline_methods_rating["Baseline"]["preds"].append(pred)
-                baseline_methods_rating["Baseline"]["actuals"].append(actual)
-            except (ValueError, Exception) as e:
-                baseline_methods_rating["Baseline"]["parse_failures"] += 1
-                logger.warning("Baseline rating parse failure for user=%d item=%d: %s", uid, mid, e)
+    rating_checkpoint_writer = CheckpointWriter(CHECKPOINT_RATING_PATH, CHECKPOINT_INTERVAL)
+    rating_lock = threading.Lock()
 
-            # --- ChatGPT-Direct (1회) ---
-            try:
-                history = _get_user_history(uid, train_df, movies_df)
-                pred = chatgpt_direct_predict_rating(history, item_info)
-                baseline_methods_rating["ChatGPT-Direct"]["preds"].append(pred)
-                baseline_methods_rating["ChatGPT-Direct"]["actuals"].append(actual)
-            except (ValueError, Exception) as e:
-                baseline_methods_rating["ChatGPT-Direct"]["parse_failures"] += 1
-                logger.warning("ChatGPT-Direct rating parse failure for user=%d item=%d: %s", uid, mid, e)
+    rows_to_process = []
+    for _, row in rating_test_rows.iterrows():
+        key = (int(row["userId"]), int(row["movieId"]))
+        if done_by_row.get(key, set()) >= expected_rating_methods:
+            continue  # 이 행은 이미 모든 방법론이 완료됨
+        rows_to_process.append(row)
 
-        # --- Ours / Ours+History: method별로 각각 실행 (항상 실행됨) ---
-        for method in FACTOR_METHODS:
-            tag = method.upper()
-            fr = factor_results[method]
-            factor_ids = fr["factor_ids"]
-            agent_prompts = fr["agent_prompts"]
-            user_weights_df = fr["user_weights_df"]
+    logger.info("  %d/%d rows remaining to process (resume-aware).",
+                len(rows_to_process), len(rating_test_rows))
 
-            # Ours (include_history=False)
-            try:
-                agent_outputs = {}
-                for fid in factor_ids:
-                    agent_outputs[fid] = agent_judge_single(agent_prompts[fid], item_info)
-                uw = {fid: float(user_weights_df.loc[uid, fid]) for fid in factor_ids} \
-                    if uid in user_weights_df.index else {fid: 1.0 / len(factor_ids) for fid in factor_ids}
-                pred = orchestrate_rating(agent_outputs, uw, history=None)
-                ours_methods_rating[f"Ours ({tag})"]["preds"].append(pred)
-                ours_methods_rating[f"Ours ({tag})"]["actuals"].append(actual)
-            except Exception as e:
-                ours_methods_rating[f"Ours ({tag})"]["parse_failures"] += 1
-                logger.warning("Ours (%s) rating failure for user=%d item=%d: %s", tag, uid, mid, e)
+    if rows_to_process:
+        with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
+            futures = {
+                executor.submit(
+                    _process_rating_row, row,
+                    done_methods=done_by_row.get((int(row["userId"]), int(row["movieId"])), set()),
+                    train_df=train_df, movies_df=movies_df,
+                    user_feature_matrix=user_feature_matrix,
+                    userknn_model=userknn_model, mf_model=mf_model,
+                    factor_results=factor_results, agent_executor=agent_executor,
+                ): row
+                for row in rows_to_process
+            }
+            for fut in tqdm(as_completed(futures), total=len(futures), desc="Rating Track"):
+                uid, mid, records = fut.result()
+                new_checkpoint_records = []
+                with rating_lock:
+                    for rec in records:
+                        method_name = rec["method"]
+                        if rec["failed"]:
+                            methods_rating[method_name]["parse_failures"] += 1
+                        else:
+                            methods_rating[method_name]["preds"].append(rec["pred"])
+                            methods_rating[method_name]["actuals"].append(rec["actual"])
+                            new_checkpoint_records.append({
+                                "user_id": uid, "movie_id": mid,
+                                "method": method_name,
+                                "pred": rec["pred"], "actual": rec["actual"],
+                            })
+                rating_checkpoint_writer.add(new_checkpoint_records)
 
-            # Ours+History
-            try:
-                hist_titles = _get_user_history_titles(uid, train_df, movies_df)
-                pred = orchestrate_rating(agent_outputs, uw, history=hist_titles)
-                ours_methods_rating[f"Ours+History ({tag})"]["preds"].append(pred)
-                ours_methods_rating[f"Ours+History ({tag})"]["actuals"].append(actual)
-            except Exception as e:
-                ours_methods_rating[f"Ours+History ({tag})"]["parse_failures"] += 1
-                logger.warning("Ours+History (%s) rating failure for user=%d item=%d: %s", tag, uid, mid, e)
+    rating_checkpoint_writer.flush()
 
     # 레이팅 트랙 지표 계산 — 베이스라인(스킵 시 빈 값) + Ours 변형 합산
-    all_rating_methods = {**baseline_methods_rating, **ours_methods_rating}
-    for method_name, data in all_rating_methods.items():
+    for method_name, data in methods_rating.items():
         if data["preds"]:
             results_records.append({
                 "method": method_name,
@@ -310,11 +686,12 @@ def main():
     if DEBUG_SKIP_OTHER_METHODS:
         logger.info("  DEBUG_SKIP_OTHER_METHODS=True — Ranking Track 전체를 건너뜁니다.")
     else:
-        # 베이스라인 4개 (1번만 실행)
+        # 베이스라인 5개 (1번만 실행)
         baseline_methods_ranking: dict[str, dict] = {
             "UserKNN":          {"recall": [], "ndcg": [], "parse_failures": 0},
             "MF":               {"recall": [], "ndcg": [], "parse_failures": 0},
             "Baseline":         {"recall": [], "ndcg": [], "parse_failures": 0},
+            "Baseline+History": {"recall": [], "ndcg": [], "parse_failures": 0},
             "ChatGPT-Direct":   {"recall": [], "ndcg": [], "parse_failures": 0},
         }
 
@@ -325,93 +702,71 @@ def main():
             ours_methods_ranking[f"Ours ({tag})"] = {"recall": [], "ndcg": [], "parse_failures": 0}
             ours_methods_ranking[f"Ours+History ({tag})"] = {"recall": [], "ndcg": [], "parse_failures": 0}
 
-        for uid in tqdm(valid_users, desc="Ranking Track"):
-            cs = candidate_sets[uid]
-            positive_id = cs["positive"]
-            candidate_ids = cs["candidates"]
+        methods_ranking = {**baseline_methods_ranking, **ours_methods_ranking}
 
-            # 후보 아이템 정보
-            candidate_items = []
-            candidate_titles_map = {}
-            for cid in candidate_ids:
-                info = _get_item_info(cid, movies_df)
-                candidate_items.append({"item_id": cid, "title": info["title"], "genres": info["genres"]})
-                candidate_titles_map[cid] = info["title"]
+        expected_ranking_methods = {"UserKNN", "MF", "Baseline", "Baseline+History", "ChatGPT-Direct"}
+        for method in FACTOR_METHODS:
+            tag = method.upper()
+            expected_ranking_methods.add(f"Ours ({tag})")
+            expected_ranking_methods.add(f"Ours+History ({tag})")
 
-            # --- UserKNN (1회) ---
-            ranked = rank_by_stat_method(userknn_model.predict, uid, candidate_ids)
-            baseline_methods_ranking["UserKNN"]["recall"].append(recall_at_k(ranked, positive_id))
-            baseline_methods_ranking["UserKNN"]["ndcg"].append(ndcg_at_k(ranked, positive_id))
+        # ── 재개(resume) ──
+        existing_ranking_records = _load_checkpoint(CHECKPOINT_RANKING_PATH)
+        done_by_user: dict[int, set] = defaultdict(set)
+        for rec in existing_ranking_records:
+            done_by_user[rec["user_id"]].add(rec["method"])
+            if rec["method"] in methods_ranking:
+                methods_ranking[rec["method"]]["recall"].append(rec["recall"])
+                methods_ranking[rec["method"]]["ndcg"].append(rec["ndcg"])
+        if existing_ranking_records:
+            logger.info("  Resumed %d existing ranking checkpoint records "
+                         "(%d users already have some results).",
+                         len(existing_ranking_records), len(done_by_user))
 
-            # --- MF (1회) ---
-            ranked = rank_by_stat_method(lambda u, i: mf_predict(mf_model, u, i), uid, candidate_ids)
-            baseline_methods_ranking["MF"]["recall"].append(recall_at_k(ranked, positive_id))
-            baseline_methods_ranking["MF"]["ndcg"].append(ndcg_at_k(ranked, positive_id))
+        ranking_checkpoint_writer = CheckpointWriter(CHECKPOINT_RANKING_PATH, CHECKPOINT_INTERVAL)
+        ranking_lock = threading.Lock()
 
-            # --- Baseline 19dim→LLM (1회, 배치) ---
-            try:
-                uf = user_feature_matrix.loc[uid] if uid in user_feature_matrix.index else pd.Series(dtype=float)
-                ranked = baseline_rank(uf, candidate_items)
-                baseline_methods_ranking["Baseline"]["recall"].append(recall_at_k(ranked, positive_id))
-                baseline_methods_ranking["Baseline"]["ndcg"].append(ndcg_at_k(ranked, positive_id))
-            except Exception as e:
-                baseline_methods_ranking["Baseline"]["parse_failures"] += 1
-                logger.warning("Baseline ranking failure for user=%d: %s", uid, e)
+        users_to_process = [
+            uid for uid in valid_users
+            if done_by_user.get(uid, set()) < expected_ranking_methods
+        ]
+        logger.info("  %d/%d users remaining to process (resume-aware).",
+                    len(users_to_process), len(valid_users))
 
-            # --- ChatGPT-Direct (1회, 배치) ---
-            try:
-                history = _get_user_history(uid, train_df, movies_df)
-                ranked = chatgpt_direct_rank(history, candidate_items)
-                baseline_methods_ranking["ChatGPT-Direct"]["recall"].append(recall_at_k(ranked, positive_id))
-                baseline_methods_ranking["ChatGPT-Direct"]["ndcg"].append(ndcg_at_k(ranked, positive_id))
-            except Exception as e:
-                baseline_methods_ranking["ChatGPT-Direct"]["parse_failures"] += 1
-                logger.warning("ChatGPT-Direct ranking failure for user=%d: %s", uid, e)
+        if users_to_process:
+            with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
+                futures = {
+                    executor.submit(
+                        _process_ranking_user, uid,
+                        done_methods=done_by_user.get(uid, set()),
+                        candidate_sets=candidate_sets, train_df=train_df, movies_df=movies_df,
+                        user_feature_matrix=user_feature_matrix,
+                        userknn_model=userknn_model, mf_model=mf_model,
+                        factor_results=factor_results, agent_executor=agent_executor,
+                    ): uid
+                    for uid in users_to_process
+                }
+                for fut in tqdm(as_completed(futures), total=len(futures), desc="Ranking Track"):
+                    uid, records = fut.result()
+                    new_checkpoint_records = []
+                    with ranking_lock:
+                        for rec in records:
+                            method_name = rec["method"]
+                            if rec["failed"]:
+                                methods_ranking[method_name]["parse_failures"] += 1
+                            else:
+                                methods_ranking[method_name]["recall"].append(rec["recall"])
+                                methods_ranking[method_name]["ndcg"].append(rec["ndcg"])
+                                new_checkpoint_records.append({
+                                    "user_id": uid, "method": method_name,
+                                    "recall": rec["recall"], "ndcg": rec["ndcg"],
+                                })
+                    ranking_checkpoint_writer.add(new_checkpoint_records)
 
-            # --- Ours & Ours+History: method별로 각각 실행 ---
-            for method in FACTOR_METHODS:
-                tag = method.upper()
-                fr = factor_results[method]
-                factor_ids = fr["factor_ids"]
-                agent_prompts = fr["agent_prompts"]
-                user_weights_df = fr["user_weights_df"]
-
-                try:
-                    # 각 에이전트가 후보 20개를 배치 평가
-                    agent_batch_results: dict[str, list[dict]] = {}
-                    for fid in factor_ids:
-                        agent_batch_results[fid] = agent_judge_batch(agent_prompts[fid], candidate_items)
-
-                    # item_id 기준으로 재구성: {item_id: {factor_id: score}}
-                    agent_outputs_per_item: dict[int, dict[str, float]] = {}
-                    for cid in candidate_ids:
-                        agent_outputs_per_item[cid] = {}
-                    for fid, batch in agent_batch_results.items():
-                        for item in batch:
-                            agent_outputs_per_item[item["item_id"]][fid] = item["score"]
-
-                    uw = {fid: float(user_weights_df.loc[uid, fid]) for fid in factor_ids} \
-                        if uid in user_weights_df.index else {fid: 1.0 / len(factor_ids) for fid in factor_ids}
-
-                    # Ours (no history)
-                    ranked = orchestrate_ranking(agent_outputs_per_item, uw, history=None)
-                    ours_methods_ranking[f"Ours ({tag})"]["recall"].append(recall_at_k(ranked, positive_id))
-                    ours_methods_ranking[f"Ours ({tag})"]["ndcg"].append(ndcg_at_k(ranked, positive_id))
-
-                    # Ours+History
-                    hist_titles = _get_user_history_titles(uid, train_df, movies_df)
-                    ranked = orchestrate_ranking(agent_outputs_per_item, uw, history=hist_titles)
-                    ours_methods_ranking[f"Ours+History ({tag})"]["recall"].append(recall_at_k(ranked, positive_id))
-                    ours_methods_ranking[f"Ours+History ({tag})"]["ndcg"].append(ndcg_at_k(ranked, positive_id))
-
-                except Exception as e:
-                    ours_methods_ranking[f"Ours ({tag})"]["parse_failures"] += 1
-                    ours_methods_ranking[f"Ours+History ({tag})"]["parse_failures"] += 1
-                    logger.warning("Ours/Ours+History (%s) ranking failure for user=%d: %s", tag, uid, e)
+        ranking_checkpoint_writer.flush()
 
         # 랭킹 트랙 지표 계산 — 베이스라인 + Ours 변형 합산
-        all_ranking_methods = {**baseline_methods_ranking, **ours_methods_ranking}
-        for method_name, data in all_ranking_methods.items():
+        for method_name, data in methods_ranking.items():
             if data["recall"]:
                 results_records.append({
                     "method": method_name,
@@ -427,6 +782,8 @@ def main():
                 # 랭킹 결과 저장
                 ranking_df = pd.DataFrame({"recall@10": data["recall"], "ndcg@10": data["ndcg"]})
                 ranking_df.to_csv(os.path.join(preds_dir, f"{method_name}_ranking.csv"), index=False)
+
+    agent_executor.shutdown(wait=True)
 
     # ── 9. 최종 결과 저장 ────────────────────────────
     logger.info("[Step 9] Saving final results…")
@@ -452,6 +809,14 @@ def main():
     md_text = "\n".join(md_lines)
     with open(os.path.join(results_dir, "summary.md"), "w", encoding="utf-8") as f:
         f.write(md_text)
+
+    # 파이프라인이 끝까지 정상 완료되었으므로 체크포인트 파일을 _done으로 보관
+    _mark_checkpoint_done(CHECKPOINT_RATING_PATH)
+    _mark_checkpoint_done(CHECKPOINT_RANKING_PATH)
+
+    n_429 = get_rate_limit_error_count()
+    if n_429 > 0:
+        logger.info("총 429 에러 %d회 발생 (MAX_WORKERS를 낮추는 것을 고려하세요)", n_429)
 
     elapsed = time.time() - start_time
     logger.info("=" * 60)

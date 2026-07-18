@@ -9,6 +9,8 @@ import time
 import logging
 import difflib
 
+import threading
+
 import httpx
 from openai import OpenAI
 
@@ -23,6 +25,21 @@ _client = OpenAI(
     api_key=os.getenv("OPENROUTER_API_KEY"),
     http_client=httpx.Client(verify=False),
 )
+
+# ── 429 에러 카운터 (스레드 세이프, 파이프라인 종료 시 요약 로그용) ──
+_rate_limit_lock = threading.Lock()
+_rate_limit_error_count = 0
+
+
+def get_rate_limit_error_count() -> int:
+    with _rate_limit_lock:
+        return _rate_limit_error_count
+
+
+def _incr_rate_limit_error_count() -> None:
+    global _rate_limit_error_count
+    with _rate_limit_lock:
+        _rate_limit_error_count += 1
 
 
 def call_llm(
@@ -50,6 +67,8 @@ def call_llm(
         except Exception as e:
             last_exc = e
             status = getattr(e, "status_code", None) or getattr(e, "http_status", None)
+            if status == 429:
+                _incr_rate_limit_error_count()
             if status in (429, 500, 502, 503, 504) or status is None:
                 wait = 2 ** attempt
                 logger.warning(
